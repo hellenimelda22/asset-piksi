@@ -5,17 +5,15 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up()
-    {
+    public function up(): void {
         Schema::create('kategori_asets', function (Blueprint $table) {
-            $table->id(); // Kolom ID dengan tipe BigInt Unsigned
+            $table->id();
             $table->string('nama_kategori');
             $table->timestamps();
         });
     }
 
-    public function down()
-    {
+    public function down(): void {
         Schema::dropIfExists('kategori_asets');
     }
 };

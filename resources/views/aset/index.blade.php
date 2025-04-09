@@ -1,15 +1,17 @@
 @extends('layouts.app')
+@section('title', 'Daftar Aset')
 
 @section('content')
-<div class="container">
     <h2>Manajemen Aset</h2>
+
     <a href="{{ route('aset.create') }}" class="btn btn-primary mb-3">Tambah Aset</a>
 
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Kode Aset</th>
+                <th>No</th>
                 <th>Nama Aset</th>
+                <th>Kategori</th>
                 <th>Lokasi</th>
                 <th>Kondisi</th>
                 <th>Status</th>
@@ -17,23 +19,24 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($asets as $aset)
-            <tr>
-                <td>{{ $aset->kode_aset }}</td>
-                <td>{{ $aset->nama_aset }}</td>
-                <td>{{ $aset->lokasi }}</td>
-                <td>{{ $aset->kondisi }}</td>
-                <td>{{ $aset->status }}</td>
-                <td>
-                    <form action="{{ route('aset.destroy', $aset->id) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-danger">Hapus</button>
-                    </form>
-                </td>
-            </tr>
+            @foreach ($aset as $item)
+                <tr>
+                    <td>{{ $loop->iteration }}</td>
+                    <td>{{ $item->nama_aset }}</td>
+                    <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
+                    <td>{{ $item->lokasi }}</td>
+                    <td>{{ $item->kondisi }}</td>
+                    <td>{{ $item->status }}</td>
+                    <td>
+                        <a href="{{ route('aset.edit', $item->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <form action="{{ route('aset.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus?')">
+                            @csrf
+                            @method('DELETE')
+                            <button class="btn btn-sm btn-danger">Hapus</button>
+                        </form>
+                    </td>
+                </tr>
             @endforeach
         </tbody>
     </table>
-</div>
 @endsection

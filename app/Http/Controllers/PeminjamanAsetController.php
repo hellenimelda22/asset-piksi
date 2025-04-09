@@ -5,51 +5,45 @@ namespace App\Http\Controllers;
 use App\Models\PeminjamanAset;
 use App\Models\Aset;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class PeminjamanAsetController extends Controller
 {
     public function index()
     {
-        $peminjaman = PeminjamanAset::with(['aset', 'user'])->get();
+        $peminjaman = PeminjamanAset::with('aset', 'user')->get();
         return view('peminjaman.index', compact('peminjaman'));
     }
 
     public function create()
     {
-        $aset = Aset::where('status', 'Tersedia')->get();
+        $aset = Aset::all();
         return view('peminjaman.create', compact('aset'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'aset_id' => 'required',
+            'aset_id' => 'required|exists:assets,id',
             'tanggal_pinjam' => 'required|date',
+            'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
         ]);
 
         PeminjamanAset::create([
             'aset_id' => $request->aset_id,
-            'user_id' => Auth::id(),
+            'user_id' => auth()->id(),
             'tanggal_pinjam' => $request->tanggal_pinjam,
-            'status' => 'Dipinjam'
+            'tanggal_kembali' => $request->tanggal_kembali,
+            'status' => 'Pending',
         ]);
 
-        Aset::where('id', $request->aset_id)->update(['status' => 'Dipinjam']);
-
-        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil diajukan.');
+        return redirect()->route('peminjaman.index')->with('success', 'Peminjaman berhasil diajukan');
     }
 
-    public function return($id)
+    public function riwayat()
     {
-        $peminjaman = PeminjamanAset::findOrFail($id);
-        $peminjaman->update([
-            'tanggal_kembali' => now(),
-            'status' => 'Dikembalikan'
-        ]);
-
-        Aset::where('id', $peminjaman->aset_id)->update(['status' => 'Tersedia']);
-
-        return redirect()->route('peminjaman.index')->with('success', 'Aset berhasil dikembalikan.');
+        $peminjaman = PeminjamanAset::where('user_id', auth()->id())
+                                    ->with('aset')
+                                    ->get();
+        return view('peminjaman.riwayat', compact('peminjaman'));
     }
 }

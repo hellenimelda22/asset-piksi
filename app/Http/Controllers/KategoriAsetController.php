@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\KategoriAset;
+use App\Models\KategoriAset;  
 use Illuminate\Http\Request;
 
 class KategoriAsetController extends Controller
 {
     public function index()
     {
-        $kategori = KategoriAset::all();
-        return view('kategori.index', compact('kategori'));
+        // Ambil semua data kategori
+        $kategori = KategoriAset::all();  // Mengambil semua data kategori dari database
+
+        // Kirimkan data kategori ke tampilan
+        return view('kategori.index', compact('kategori'));  // Mengirim variabel kategori ke tampilan
     }
 
     public function create()
@@ -21,33 +24,45 @@ class KategoriAsetController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_kategori' => 'required|unique:kategori_aset|max:255'
+            'nama_kategori' => 'required|string|max:255'
         ]);
 
-        KategoriAset::create($request->all());
+        // Menggunakan model KategoriAset untuk menyimpan data kategori
+        KategoriAset::create([
+            'nama_kategori' => $request->nama_kategori
+        ]);
 
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan.');
     }
 
-    public function edit(KategoriAset $kategori)
+    public function edit($id)
     {
+        // Menggunakan model KategoriAset untuk mencari data kategori
+        $kategori = KategoriAset::findOrFail($id);
         return view('kategori.edit', compact('kategori'));
     }
 
-    public function update(Request $request, KategoriAset $kategori)
+    public function update(Request $request, $id)
     {
         $request->validate([
-            'nama_kategori' => 'required|max:255|unique:kategori_aset,nama_kategori,' . $kategori->id
+            'nama_kategori' => 'required|string|max:255'
         ]);
 
-        $kategori->update($request->all());
+        // Menggunakan model KategoriAset untuk memperbarui data kategori
+        $kategori = KategoriAset::findOrFail($id);
+        $kategori->update([
+            'nama_kategori' => $request->nama_kategori
+        ]);
 
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diperbarui.');
+        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diupdate.');
     }
 
-    public function destroy(KategoriAset $kategori)
+    public function destroy($id)
     {
+        // Menggunakan model KategoriAset untuk menghapus data kategori
+        $kategori = KategoriAset::findOrFail($id);
         $kategori->delete();
+
         return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus.');
     }
 }

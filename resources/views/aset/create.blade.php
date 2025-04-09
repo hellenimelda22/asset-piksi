@@ -1,51 +1,51 @@
-@extends('layouts.main')
-
+@extends('layouts.app')
 @section('title', 'Tambah Aset')
 
 @section('content')
-<div class="container mt-4">
-    <h2 class="text-center fw-bold text-dark">Tambah Aset Baru</h2>
-    
-    <!-- Form Tambah Aset -->
-    <div class="card p-4 shadow-sm border-0 rounded-4">
-        <form action="{{ route('aset.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Kode Aset</label>
-                <input type="text" class="form-control" name="kode_aset" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Nama Aset</label>
-                <input type="text" class="form-control" name="nama_aset" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Kategori</label>
-                <select class="form-select" name="kategori_id" required>
-                    <option value="">-- Pilih Kategori --</option>
-                    @foreach($kategori as $k)
-                        <option value="{{ $k->id }}">{{ $k->nama_kategori }}</option>
-                    @endforeach
-                </select>
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Lokasi</label>
-                <input type="text" class="form-control" name="lokasi" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Kondisi</label>
-                <select class="form-select" name="kondisi" required>
-                    <option value="Baik">Baik</option>
-                    <option value="Rusak">Rusak</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Upload Gambar</label>
-                <input type="file" class="form-control" name="gambar_aset">
-            </div>
-            <div class="text-end">
-                <button type="submit" class="btn btn-dark rounded-pill px-4">Simpan</button>
-            </div>
-        </form>
-    </div>
-</div>
+    <h2>Tambah Aset</h2>
+
+    <form action="{{ route('aset.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="mb-3">
+            <label for="kode_aset" class="form-label">Kode Aset</label>
+            <input type="text" name="kode_aset" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="nama_aset" class="form-label">Nama Aset</label>
+            <input type="text" name="nama_aset" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="kategori_id" class="form-label">Kategori</label>
+            <select name="kategori_id" class="form-control" required>
+                <option value="">-- Pilih Kategori --</option>
+                @foreach ($kategori as $item)
+                    <option value="{{ $item->id }}">{{ $item->nama_kategori }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="lokasi" class="form-label">Lokasi</label>
+            <input type="text" name="lokasi" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="kondisi" class="form-label">Kondisi</label>
+            <select name="kondisi" class="form-control" required>
+                <option value="Baik">Baik</option>
+                <option value="Rusak">Rusak</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="status" class="form-label">Status</label>
+            <select name="status" class="form-control" required>
+                <option value="Tersedia">Tersedia</option>
+                <option value="Dipinjam">Dipinjam</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="gambar_aset" class="form-label">Gambar Aset (opsional)</label>
+            <input type="file" name="gambar_aset" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Simpan</button>
+        <a href="{{ route('aset.index') }}" class="btn btn-secondary">Kembali</a>
+    </form>
 @endsection

@@ -9,7 +9,14 @@ class Aset extends Model
 {
     use HasFactory;
 
+    protected $table = 'asets';
+
     protected $fillable = [
         'kode_aset', 'nama_aset', 'kategori_id', 'lokasi', 'kondisi', 'gambar_aset', 'status'
     ];
+
+    public function kategori()
+    {
+        return $this->belongsTo(KategoriAset::class, 'kategori_id');
+    }
 }
