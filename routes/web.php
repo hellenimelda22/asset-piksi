@@ -14,7 +14,7 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// **Rute Autentikasi (Login, Register, Logout)**
+// Rute Autentikasi (Login, Register, Logout)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
@@ -26,31 +26,30 @@ Route::middleware('auth')->group(function () {
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-    // **Dashboard**
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // **Manajemen Aset**
-    Route::resource('/aset', AsetController::class); // <- Sudah pakai "aset" ✅
+    // Manajemen Aset
+    Route::resource('/aset', AsetController::class);
 
-    // **Manajemen Kategori Aset**
-    Route::resource('/kategori', KategoriAsetController::class); // Ganti ke Route::resource untuk konsistensi
+    // Manajemen Kategori Aset
+    Route::resource('/kategori', KategoriAsetController::class);
 
-    // **Manajemen Peminjaman Aset**
-    Route::prefix('peminjaman')->group(function() {
-        Route::get('/', [PeminjamanAsetController::class, 'index'])->name('peminjaman.index');
-        Route::get('/create', [PeminjamanAsetController::class, 'create'])->name('peminjaman.create');
-        Route::post('/store', [PeminjamanAsetController::class, 'store'])->name('peminjaman.store');
-        Route::get('/riwayat', [PeminjamanAsetController::class, 'riwayat'])->name('peminjaman.riwayat');
+    // Manajemen Peminjaman Aset
+    Route::prefix('peminjaman')->name('peminjaman.')->group(function () {
+        Route::get('/', [PeminjamanAsetController::class, 'index'])->name('index');
+        Route::get('/create', [PeminjamanAsetController::class, 'create'])->name('create');
+        Route::post('/store', [PeminjamanAsetController::class, 'store'])->name('store');
+        Route::patch('/{id}/kembalikan', [PeminjamanAsetController::class, 'kembalikan'])->name('kembalikan');
     });
 
-    // **Laporan Routes**
-    Route::prefix('laporan')->group(function() {
-        Route::get('/', [LaporanController::class, 'index'])->name('laporan.index');
-        Route::get('/aset', [LaporanController::class, 'laporanAset'])->name('laporan.aset');
-        Route::get('/peminjaman', [LaporanController::class, 'laporanPeminjaman'])->name('laporan.peminjaman');
-        Route::get('/cetakPDF', [LaporanController::class, 'generatePDF'])->name('laporan.cetakPDF');
-        Route::get('/aset/pdf', [LaporanController::class, 'cetakLaporanAset'])->name('laporan.aset.pdf');
-        Route::get('/peminjaman/pdf', [LaporanController::class, 'cetakLaporanPeminjaman'])->name('laporan.peminjaman.pdf');
-
+    // Laporan
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/', [LaporanController::class, 'index'])->name('index');
+        Route::get('/aset', [LaporanController::class, 'laporanAset'])->name('aset');
+        Route::get('/peminjaman', [LaporanController::class, 'laporanPeminjaman'])->name('peminjaman');
+        Route::get('/cetakPDF', [LaporanController::class, 'generatePDF'])->name('cetakPDF');
+        Route::get('/aset/pdf', [LaporanController::class, 'cetakLaporanAset'])->name('aset.pdf');
+        Route::get('/peminjaman/pdf', [LaporanController::class, 'cetakLaporanPeminjaman'])->name('peminjaman.pdf');
     });
 });

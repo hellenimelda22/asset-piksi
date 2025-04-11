@@ -11,13 +11,31 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // Ambil data statistik yang dibutuhkan
-        return view('dashboard', [
-            'total_aset' => Asset::count(),
-            'total_kategori' => KategoriAset::count(),
-            'total_peminjaman' => PeminjamanAset::where('status', 'Dipinjam')->count(),
-            'total_aset_baik' => Asset::where('kondisi', 'Baik')->count(),
-            'total_aset_rusak' => Asset::where('kondisi', 'Rusak')->count(),
-        ]);
+        // Statistik ringkasan
+        $totalAset       = Asset::count();
+        $totalKategori   = KategoriAset::count();
+        $totalPeminjaman = PeminjamanAset::count();
+        $totalDipinjam   = PeminjamanAset::where('status', 'Dipinjam')->count();
+
+        // Statistik kondisi aset
+        $asetBaik  = Asset::where('kondisi', 'Baik')->count();
+        $asetRusak = Asset::where('kondisi', 'Rusak')->count();
+
+        // 5 peminjaman terbaru
+        $peminjamanTerbaru = PeminjamanAset::with('aset')
+                                ->latest()
+                                ->take(5)
+                                ->get();
+
+        // Kirim data ke view dashboard
+        return view('dashboard', compact(
+            'totalAset',
+            'totalKategori',
+            'totalPeminjaman',
+            'totalDipinjam',
+            'asetBaik',
+            'asetRusak',
+            'peminjamanTerbaru'
+        ));
     }
 }

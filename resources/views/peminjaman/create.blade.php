@@ -1,29 +1,42 @@
-<!-- resources/views/peminjaman/create.blade.php -->
 @extends('layouts.app')
 
 @section('content')
-    <h3>Ajukan Peminjaman Aset</h3>
-    <form method="POST" action="{{ route('peminjaman.store') }}">
-        @csrf
-        <div class="form-group">
-            <label for="aset_id">Pilih Aset</label>
-            <select name="aset_id" class="form-control" required>
-                @foreach ($aset as $item)
-                    <option value="{{ $item->id }}">{{ $item->nama_aset }}</option>
-                @endforeach
-            </select>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4>Catat Peminjaman Aset</h4>
         </div>
+        <div class="card-body">
+            <form method="POST" action="{{ route('peminjaman.store') }}">
+                @csrf
 
-        <div class="form-group">
-            <label for="tanggal_pinjam">Tanggal Pinjam</label>
-            <input type="date" name="tanggal_pinjam" class="form-control" required>
+                <div class="mb-3">
+                    <label for="nama_peminjam" class="form-label">Nama Peminjam</label>
+                    <input type="text" name="nama_peminjam" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="aset_id" class="form-label">Pilih Aset</label>
+                    <select name="aset_id" class="form-control" required>
+                        @foreach ($aset as $item)
+                            <option value="{{ $item->id }}">{{ $item->nama_aset }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="tanggal_pinjam" class="form-label">Tanggal Pinjam</label>
+                    <input type="date" name="tanggal_pinjam" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="tanggal_kembali" class="form-label">Tanggal Kembali</label>
+                    <input type="date" name="tanggal_kembali" class="form-control" required>
+                </div>
+
+                <button type="submit" class="btn btn-success">Simpan Peminjaman</button>
+            </form>
         </div>
-
-        <div class="form-group">
-            <label for="tanggal_kembali">Tanggal Kembali</label>
-            <input type="date" name="tanggal_kembali" class="form-control" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Ajukan Peminjaman</button>
-    </form>
+    </div>
+</div>
 @endsection

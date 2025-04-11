@@ -1,85 +1,88 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard')
-
 @section('content')
 <div class="container mt-4">
-    <h3>Selamat datang di Dashboard, {{ Auth::user()->name }}</h3>
-    <p class="text-muted">Kelola data aset, kategori, dan peminjaman di sistem ini.</p>
+    <h4 class="mb-4">Selamat datang, {{ auth()->user()->name }}</h4>
 
+    <!-- Statistik Ringkas -->
     <div class="row">
-        <!-- Total Aset -->
-        <div class="col-md-3 mb-4">
-            <div class="card shadow-lg border-primary">
-                <div class="card-body bg-info text-white rounded">
-                    <h5 class="card-title text-center">Total Aset</h5>
-                    <p class="card-text text-center" style="font-size: 2rem; font-weight: bold;">{{ $total_aset }}</p>
+        @php
+            $stats = [
+                ['title' => 'Total Aset', 'value' => $totalAset, 'color' => 'primary'],
+                ['title' => 'Total Kategori', 'value' => $totalKategori, 'color' => 'success'],
+                ['title' => 'Total Peminjaman', 'value' => $totalPeminjaman, 'color' => 'info'],
+                ['title' => 'Aset Dipinjam', 'value' => $totalDipinjam, 'color' => 'warning']
+            ];
+        @endphp
+
+        @foreach ($stats as $stat)
+        <div class="col-sm-6 col-md-3 mb-3">
+            <div class="card border-left-{{ $stat['color'] }} shadow-sm h-100 py-2">
+                <div class="card-body">
+                    <h6 class="text-muted">{{ $stat['title'] }}</h6>
+                    <h3>{{ $stat['value'] }}</h3>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+
+    <!-- Grafik dan Peminjaman -->
+    <div class="row mt-4">
+        <!-- Grafik Kondisi Aset -->
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-secondary text-white">Statistik Kondisi Aset</div>
+                <div class="card-body">
+                    <canvas id="chartKondisiAset" style="max-height: 300px;"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- Total Kategori -->
-        <div class="col-md-3 mb-4">
-            <div class="card shadow-lg border-success">
-                <div class="card-body bg-success text-white rounded">
-                    <h5 class="card-title text-center">Total Kategori</h5>
-                    <p class="card-text text-center" style="font-size: 2rem; font-weight: bold;">{{ $total_kategori }}</p>
+        <!-- Peminjaman Terbaru -->
+        <div class="col-md-6 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white">Peminjaman Terbaru</div>
+                <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                    @forelse ($peminjamanTerbaru as $item)
+                        <div class="mb-3">
+                            <strong>{{ $item->nama_peminjam }}</strong> pinjam <em>{{ $item->aset->nama_aset }}</em><br>
+                            <small class="text-muted">{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d M Y') }} → {{ \Carbon\Carbon::parse($item->tanggal_kembali)->format('d M Y') }}</small>
+                        </div>
+                        @if (!$loop->last) <hr> @endif
+                    @empty
+                        <p class="text-muted">Tidak ada peminjaman terbaru.</p>
+                    @endforelse
                 </div>
-            </div>
-        </div>
-
-        <!-- Total Peminjaman -->
-        <div class="col-md-3 mb-4">
-            <div class="card shadow-lg border-warning">
-                <div class="card-body bg-warning text-dark rounded">
-                    <h5 class="card-title text-center">Total Peminjaman</h5>
-                    <p class="card-text text-center" style="font-size: 2rem; font-weight: bold;">{{ $total_peminjaman }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Aset Baik -->
-        <div class="col-md-3 mb-4">
-            <div class="card shadow-lg border-success">
-                <div class="card-body bg-success text-white rounded">
-                    <h5 class="card-title text-center">Total Aset Baik</h5>
-                    <p class="card-text text-center" style="font-size: 2rem; font-weight: bold;">{{ $total_aset_baik }}</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Total Aset Rusak -->
-        <div class="col-md-3 mb-4">
-            <div class="card shadow-lg border-danger">
-                <div class="card-body bg-danger text-white rounded">
-                    <h5 class="card-title text-center">Total Aset Rusak</h5>
-                    <p class="card-text text-center" style="font-size: 2rem; font-weight: bold;">{{ $total_aset_rusak }}</p>
-                </div>
-            </div>
-        </div>
-    </div>   
-
-    <!-- Memberikan jarak antara bagian statistik dan tombol laporan -->
-    <div class="mt-5"></div> <!-- Memberi jarak lebih banyak antara statistik dan laporan -->
-
-    <!-- Tombol Cetak Laporan dalam Card -->
-    <div class="card shadow-lg mt-5">
-        <div class="card-body">
-            <h5 class="card-title text-center">Cetak Laporan</h5>
-            <p class="text-center text-muted">Pilih jenis laporan yang ingin dicetak</p>
-
-            <div class="d-flex justify-content-center gap-3">
-                <!-- Tombol untuk mencetak laporan aset dan peminjaman -->
-                <a href="{{ route('laporan.cetakPDF') }}" class="btn btn-success btn-lg">Laporan Aset & Peminjaman</a>
-
-                <!-- Tombol untuk mencetak laporan hanya aset -->
-                <a href="{{ route('laporan.aset.pdf') }}" class="btn btn-primary btn-lg">Laporan Aset</a>
-
-                <!-- Tombol untuk mencetak laporan hanya peminjaman -->
-                <a href="{{ route('laporan.peminjaman.pdf') }}" class="btn btn-info btn-lg">Laporan Peminjaman</a>
             </div>
         </div>
     </div>
-
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    const ctx = document.getElementById('chartKondisiAset').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Baik', 'Rusak'],
+            datasets: [{
+                label: 'Kondisi Aset',
+                data: [{{ $asetBaik }}, {{ $asetRusak }}],
+                backgroundColor: ['#198754', '#dc3545'],
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
 @endsection

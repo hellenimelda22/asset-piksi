@@ -7,8 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class PeminjamanAset extends Model
 {
     use HasFactory;
-    protected $fillable = ['aset_id', 'user_id', 'tanggal_pinjam', 'tanggal_kembali', 'status'];
-
+    protected $fillable = [
+        'user_id',
+        'nama_peminjam',
+        'aset_id',
+        'tanggal_pinjam',
+        'tanggal_kembali',
+        'status',
+    ];
+    
     public function aset() {
         return $this->belongsTo(Asset::class);
     }

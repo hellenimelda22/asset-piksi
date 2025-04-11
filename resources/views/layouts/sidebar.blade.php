@@ -74,12 +74,9 @@
                     </li>
                     <li>
                         <a href="{{ route('peminjaman.create') }}"
-                           class="nav-link {{ $currentRoute == 'peminjaman.create' ? 'active' : 'text-white' }}">Ajukan Peminjaman</a>
+                           class="nav-link {{ $currentRoute == 'peminjaman.create' ? 'active' : 'text-white' }}">Catat Peminjaman</a>
                     </li>
                     <li>
-                        <a href="{{ route('peminjaman.riwayat') }}"
-                           class="nav-link {{ $currentRoute == 'peminjaman.riwayat' ? 'active' : 'text-white' }}">Riwayat Peminjaman</a>
-                    </li>
                 </ul>
             </div>
         </li>
