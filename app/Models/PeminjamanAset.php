@@ -10,7 +10,7 @@ class PeminjamanAset extends Model
     protected $fillable = ['aset_id', 'user_id', 'tanggal_pinjam', 'tanggal_kembali', 'status'];
 
     public function aset() {
-        return $this->belongsTo(Aset::class);
+        return $this->belongsTo(Asset::class);
     }
 
     public function user() {

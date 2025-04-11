@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PeminjamanAset;
-use App\Models\Aset;
+use App\Models\Asset;
 use Illuminate\Http\Request;
 
 class PeminjamanAsetController extends Controller
@@ -16,7 +16,7 @@ class PeminjamanAsetController extends Controller
 
     public function create()
     {
-        $aset = Aset::all();
+        $aset = Asset::all();
         return view('peminjaman.create', compact('aset'));
     }
 

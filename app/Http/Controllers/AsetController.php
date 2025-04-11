@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Aset;
+use App\Models\Asset;
 use App\Models\KategoriAset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +16,7 @@ class AsetController extends Controller
 
     public function index()
     {
-        $aset = Aset::with('kategori')->get();
+        $aset = Asset::with('kategori')->get();
         return view('aset.index', compact('aset'));
     }
 
@@ -41,21 +41,21 @@ class AsetController extends Controller
             $data['gambar_aset'] = $request->file('gambar_aset')->store('aset', 'public');
         }
 
-        Aset::create($data);
+        Asset::create($data);
 
         return redirect()->route('aset.index')->with('success', 'Aset berhasil ditambahkan.');
     }
 
     public function edit($id)
     {
-        $aset = Aset::findOrFail($id);
+        $aset = Asset::findOrFail($id);
         $kategori = KategoriAset::all();
         return view('aset.edit', compact('aset', 'kategori'));
     }
 
     public function update(Request $request, $id)
     {
-        $aset = Aset::findOrFail($id);
+        $aset = Asset::findOrFail($id);
 
         $data = $request->validate([
             'kode_aset' => 'required',
@@ -80,7 +80,7 @@ class AsetController extends Controller
 
     public function destroy($id)
     {
-        $aset = Aset::findOrFail($id);
+        $aset = Asset::findOrFail($id);
         if ($aset->gambar_aset) {
             Storage::disk('public')->delete($aset->gambar_aset);
         }

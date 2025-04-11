@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Models\Aset;
+use App\Models\Asset;
 use App\Models\PeminjamanAset;
 use App\Models\KategoriAset;
 
@@ -13,7 +13,7 @@ class LaporanController extends Controller
     public function index()
     {
         $kategoriData = KategoriAset::all();
-        $aset = Aset::all();
+        $aset = Asset::all();
         $peminjaman = PeminjamanAset::all();
 
         return view('laporan.index', compact('kategoriData', 'aset', 'peminjaman'));
@@ -23,7 +23,7 @@ class LaporanController extends Controller
     public function generatePDF(Request $request)
     {
         // Ambil data aset
-        $aset = Aset::all();
+        $aset = Asset::all();
 
         // Ambil data peminjaman jika ada filter status
         $peminjaman = PeminjamanAset::query();
@@ -62,7 +62,7 @@ class LaporanController extends Controller
     public function laporanAset()
     {
         // Ambil semua data aset
-        $aset = Aset::all();
+        $aset = Asset::all();
 
         // Kirim data aset ke view laporan aset
         return view('laporan.aset', compact('aset'));
@@ -72,7 +72,7 @@ class LaporanController extends Controller
     public function cetakLaporanAset()
     {
         // Ambil data aset
-        $aset = Aset::all();
+        $aset = Asset::all();
 
         // Load view PDF untuk laporan aset
         $pdf = Pdf::loadView('laporan.pdf', compact('aset'));
