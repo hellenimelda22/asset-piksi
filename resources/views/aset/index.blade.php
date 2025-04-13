@@ -10,6 +10,7 @@
         <thead>
             <tr>
                 <th>No</th>
+                <th>Kode Aset</th>
                 <th>Nama Aset</th>
                 <th>Kategori</th>
                 <th>Lokasi</th>
@@ -22,6 +23,7 @@
             @foreach ($aset as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
+                    <td>{{ $item->kode_aset }}</td>
                     <td>{{ $item->nama_aset }}</td>
                     <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
                     <td>{{ $item->lokasi }}</td>

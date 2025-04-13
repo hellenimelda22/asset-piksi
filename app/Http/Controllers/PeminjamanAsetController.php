@@ -25,7 +25,7 @@ class PeminjamanAsetController extends Controller
 {
     $request->validate([
         'nama_peminjam' => 'required|string|max:255',
-        'aset_id' => 'required|exists:assets,id',
+        'aset_id' => 'required|exists:asets,id',
         'tanggal_pinjam' => 'required|date',
         'tanggal_kembali' => 'required|date|after_or_equal:tanggal_pinjam',
     ]);

@@ -14,15 +14,17 @@
                     <label for="nama_peminjam" class="form-label">Nama Peminjam</label>
                     <input type="text" name="nama_peminjam" class="form-control" required>
                 </div>
-
                 <div class="mb-3">
-                    <label for="aset_id" class="form-label">Pilih Aset</label>
-                    <select name="aset_id" class="form-control" required>
-                        @foreach ($aset as $item)
-                            <option value="{{ $item->id }}">{{ $item->nama_aset }}</option>
-                        @endforeach
-                    </select>
-                </div>
+    <label for="aset_id" class="form-label">Pilih Aset</label>
+    <select name="aset_id" id="aset_id" class="form-select" required>
+        <option value="">-- Pilih Aset --</option>
+        @foreach ($aset as $item)
+            <option value="{{ $item->id }}">
+                {{ $item->kode_aset }} - {{ $item->nama_aset }}
+            </option>
+        @endforeach
+    </select>
+</div>
 
                 <div class="mb-3">
                     <label for="tanggal_pinjam" class="form-label">Tanggal Pinjam</label>

@@ -26,6 +26,12 @@ class AsetController extends Controller
         return view('aset.create', compact('kategori'));
     }
 
+    public function createMultiple()
+    {
+        $kategori = KategoriAset::all();
+        return view('aset.create_multiple', compact('kategori'));
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -44,6 +50,39 @@ class AsetController extends Controller
         Asset::create($data);
 
         return redirect()->route('aset.index')->with('success', 'Aset berhasil ditambahkan.');
+    }
+
+    public function storeMultiple(Request $request)
+    {
+        $request->validate([
+            'nama_aset' => 'required|string',
+            'kategori_id' => 'required|exists:kategori_aset,id',
+            'jumlah' => 'required|integer|min:1',
+        ]);
+
+        $namaAset = $request->nama_aset;
+        $kategoriId = $request->kategori_id;
+        $jumlah = $request->jumlah;
+
+        // Ambil kode terakhir dari aset dengan nama yang sama
+        $lastAset = Asset::where('nama_aset', $namaAset)->orderBy('id', 'desc')->first();
+        $start = 1;
+
+        if ($lastAset && preg_match('/-(\d+)$/', $lastAset->kode_aset, $matches)) {
+            $start = (int) $matches[1] + 1;
+        }
+
+        for ($i = $start; $i < $start + $jumlah; $i++) {
+            Asset::create([
+                'kode_aset' => strtoupper(substr($namaAset, 0, 3)) . '-' . str_pad($i, 3, '0', STR_PAD_LEFT),
+                'nama_aset' => $namaAset,
+                'kategori_id' => $kategoriId,
+                'status' => 'Tersedia',
+                'kondisi' => 'Baik',
+            ]);
+        }
+
+        return redirect()->route('aset.index')->with('success', $jumlah . ' unit aset berhasil ditambahkan.');
     }
 
     public function edit($id)

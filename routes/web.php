@@ -52,4 +52,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/aset/pdf', [LaporanController::class, 'cetakLaporanAset'])->name('aset.pdf');
         Route::get('/peminjaman/pdf', [LaporanController::class, 'cetakLaporanPeminjaman'])->name('peminjaman.pdf');
     });
+    // web.php
+    Route::get('/aset/tambah-banyak', [AsetController::class, 'createMultiple'])->name('aset.create_multiple');
+    Route::post('/aset/store-multiple', [AsetController::class, 'storeMultiple'])->name('aset.store_multiple');
+    
 });

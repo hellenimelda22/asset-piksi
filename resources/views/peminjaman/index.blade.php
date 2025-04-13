@@ -13,6 +13,7 @@
         <thead>
             <tr>
                 <th>Nama Peminjam</th>
+                <th>Kode Aset</th>
                 <th>Nama Aset</th>
                 <th>Tanggal Pinjam</th>
                 <th>Tanggal Kembali</th>
@@ -24,6 +25,7 @@
             @foreach ($peminjaman as $item)
                 <tr>
                     <td>{{ $item->nama_peminjam }}</td>
+                    <td>{{ $item->aset->kode_aset }}</td>
                     <td>{{ $item->aset->nama_aset }}</td>
                     <td>{{ $item->tanggal_pinjam }}</td>
                     <td>
