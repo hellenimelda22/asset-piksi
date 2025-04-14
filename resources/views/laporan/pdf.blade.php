@@ -92,16 +92,16 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($peminjaman as $item)
-                    <tr>
-                        <td>{{ $item->id }}</td>
-                        <td>{{ $item->user->name }}</td>
-                        <td>{{ $item->aset->nama_aset }}</td>
-                        <td>{{ $item->tanggal_pinjam->format('d-m-Y') }}</td>
-                        <td>{{ $item->tanggal_kembali ? $item->tanggal_kembali->format('d-m-Y') : 'Belum Kembali' }}</td>
-                        <td>{{ $item->status }}</td>
-                    </tr>
-                @endforeach
+            @foreach ($peminjaman as $item)
+<tr>
+    <td>{{ $item->id }}</td>
+    <td>{{ $item->user->name }}</td>
+    <td>{{ $item->aset->nama_aset }}</td>
+    <td>{{ date('d-m-Y', strtotime($item->tanggal_pinjam)) }}</td>
+    <td>{{ date('d-m-Y', strtotime($item->tanggal_kembali)) }}</td>
+    <td>{{ $item->status }}</td>
+</tr>
+@endforeach
             </tbody>
         </table>
     </div>

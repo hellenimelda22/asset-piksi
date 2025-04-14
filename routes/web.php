@@ -22,6 +22,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
 });
 
+// Rute yang hanya bisa diakses setelah login
 Route::middleware('auth')->group(function () {
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -29,8 +30,13 @@ Route::middleware('auth')->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Manajemen Aset
+    // Manajemen Aset (termasuk tambah banyak)
+    Route::get('/aset/tambah-banyak', [AsetController::class, 'createMultiple'])->name('aset.create_multiple');
+    Route::post('/aset/store-multiple', [AsetController::class, 'storeMultiple'])->name('aset.store_multiple');
     Route::resource('/aset', AsetController::class);
+    
+    // (Opsional) Jika kamu ingin rute show aset tersedia (lihat detail aset)
+    Route::get('/aset/{id}', [AsetController::class, 'show'])->name('aset.show');
 
     // Manajemen Kategori Aset
     Route::resource('/kategori', KategoriAsetController::class);
@@ -52,8 +58,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/aset/pdf', [LaporanController::class, 'cetakLaporanAset'])->name('aset.pdf');
         Route::get('/peminjaman/pdf', [LaporanController::class, 'cetakLaporanPeminjaman'])->name('peminjaman.pdf');
     });
-    // web.php
-    Route::get('/aset/tambah-banyak', [AsetController::class, 'createMultiple'])->name('aset.create_multiple');
-    Route::post('/aset/store-multiple', [AsetController::class, 'storeMultiple'])->name('aset.store_multiple');
+    Route::get('/coba-tambah', function () {
+        return 'Route berhasil!';
+    });
     
 });

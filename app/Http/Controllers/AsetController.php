@@ -27,10 +27,11 @@ class AsetController extends Controller
     }
 
     public function createMultiple()
-    {
-        $kategori = KategoriAset::all();
-        return view('aset.create_multiple', compact('kategori'));
-    }
+{
+    $kategori = KategoriAset::all(); // Ambil semua kategori aset
+    return view('aset.create_multiple', compact('kategori')); // Tampilkan form tambah banyak aset
+}
+
 
     public function store(Request $request)
     {
@@ -126,5 +127,13 @@ class AsetController extends Controller
         $aset->delete();
 
         return redirect()->route('aset.index')->with('success', 'Aset berhasil dihapus.');
+    }
+
+    // Menambahkan method show untuk menampilkan detail aset berdasarkan ID
+    public function show($id)
+    {
+        // Cari aset berdasarkan ID
+        $aset = Asset::with('kategori')->findOrFail($id);
+        return view('aset.show', compact('aset'));  // Mengirim data aset ke view
     }
 }

@@ -1,20 +1,19 @@
 <?php
 
+// App\Models\Aset.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Asset extends Model
+class Aset extends Model
 {
     use HasFactory;
 
-    protected $table = 'asets';
+    // Menyatakan nama tabel yang digunakan (jika tidak sesuai default)
+    protected $table = 'asets'; 
 
-    protected $fillable = [
-        'kode_aset', 'nama_aset', 'kategori_id', 'lokasi', 'kondisi', 'gambar_aset', 'status'
-    ];
-
+    // Relasi: setiap aset memiliki satu kategori
     public function kategori()
     {
         return $this->belongsTo(KategoriAset::class, 'kategori_id');

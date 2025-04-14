@@ -4,7 +4,8 @@
 @section('content')
     <h2>Manajemen Aset</h2>
 
-    <a href="{{ route('aset.create') }}" class="btn btn-primary mb-3">Tambah Aset</a>
+    <a href="{{ route('aset.create') }}" class="btn btn-primary mb-2">Tambah Aset</a>
+    <a href="{{ route('aset.create_multiple') }}" class="btn btn-success mb-3">Tambah Banyak Aset</a>
 
     <table class="table table-bordered">
         <thead>

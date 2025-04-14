@@ -10,7 +10,7 @@ class KategoriAset extends Model
     use HasFactory;
 
     // Menyatakan nama tabel yang digunakan
-    protected $table = 'kategori_asets'; // Pastikan sesuai dengan nama tabel di database
+    protected $table = 'kategori_asets'; 
 
     // Kolom yang boleh diisi massal
     protected $fillable = ['nama_kategori'];
