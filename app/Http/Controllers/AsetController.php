@@ -57,7 +57,7 @@ class AsetController extends Controller
     {
         $request->validate([
             'nama_aset' => 'required|string',
-            'kategori_id' => 'required|exists:kategori_aset,id',
+            'kategori_id' => 'required|exists:kategori_asets,id',
             'jumlah' => 'required|integer|min:1',
         ]);
 
