@@ -27,11 +27,20 @@
       <!-- Bagian Kanan Navbar -->
       <ul class="navbar-nav">
         @auth
-        <li class="nav-item">
-          <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="btn btn-sm btn-outline-light">Logout</button>
-          </form>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->name }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{{ route('profile') }}">Profil</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="dropdown-item" type="submit">Logout</button>
+              </form>
+            </li>
+          </ul>
         </li>
         @endauth
       </ul>

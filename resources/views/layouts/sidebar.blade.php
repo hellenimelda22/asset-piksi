@@ -1,117 +1,102 @@
+
 @php
-    $currentRoute = Route::currentRouteName();
+    $route = request()->route()->getName();
 @endphp
 
-<!-- Sidebar -->
-<div class="d-flex flex-column p-3 text-white bg-dark" style="height: 100vh; width: 250px;">
-    <a href="/" class="d-flex align-items-center mb-3 text-white text-decoration-none">
-        <span class="fs-4">Asset Piksi</span>
-    </a>
-    <hr>
-    <ul class="nav nav-pills flex-column mb-auto">
+<aside class="sidebar text-white p-3">
+    <div class="text-center mb-4">
+        <img src="{{ asset('images/logo_piksi.png') }}" alt="Logo" width="80">
+        <h5 class="mt-2">SI ASET</h5>
+    </div>
 
-        <!-- Dashboard -->
+    <ul class="nav flex-column">
         <li class="nav-item">
-            <a href="{{ route('dashboard') }}" class="nav-link {{ $currentRoute == 'dashboard' ? 'active' : 'text-white' }}">
-                Dashboard
+            <a href="{{ route('dashboard') }}" class="nav-link text-white {{ $route == 'dashboard' ? 'fw-bold' : '' }}">
+                <i class="bi bi-house-door me-2"></i> Dashboard
             </a>
         </li>
 
-        <!-- Aset -->
-        <li>
-            <a data-bs-toggle="collapse" href="#submenuAset" role="button"
-               class="nav-link {{ str()->startsWith($currentRoute, 'aset') ? '' : 'text-white' }}"
-               aria-expanded="{{ str()->startsWith($currentRoute, 'aset') ? 'true' : 'false' }}">
-                Aset
+        {{-- Data Aset --}}
+        @php $isAset = request()->is('aset*'); @endphp
+        <li class="nav-item">
+            <a class="nav-link text-white {{ $isAset ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#asetMenu" role="button" aria-expanded="{{ $isAset ? 'true' : 'false' }}">
+                <i class="bi bi-box me-2"></i> Data Aset
             </a>
-            <div class="collapse {{ str()->startsWith($currentRoute, 'aset') ? 'show' : '' }}" id="submenuAset">
-                <ul class="list-unstyled ps-3">
+            <div class="collapse {{ $isAset ? 'show' : '' }}" id="asetMenu">
+                <ul class="nav flex-column ms-3">
                     <li>
-                        <a href="{{ route('aset.index') }}"
-                           class="nav-link {{ $currentRoute == 'aset.index' ? 'active' : 'text-white' }}">Lihat Aset</a>
+                        <a href="{{ route('aset.index') }}" class="nav-link text-white {{ $route == 'aset.index' ? 'fw-bold' : '' }}">Lihat Aset</a>
                     </li>
                     <li>
-                        <a href="{{ route('aset.create') }}"
-                           class="nav-link {{ $currentRoute == 'aset.create' ? 'active' : 'text-white' }}">Tambah Aset</a>
+                        <a href="{{ route('aset.create') }}" class="nav-link text-white {{ $route == 'aset.create' ? 'fw-bold' : '' }}">Tambah Aset</a>
                     </li>
                 </ul>
             </div>
         </li>
 
-        <!-- Kategori Aset -->
-        <li>
-            <a data-bs-toggle="collapse" href="#submenuKategori" role="button"
-               class="nav-link {{ str()->startsWith($currentRoute, 'aset') ? '' : 'text-white' }}"
-               aria-expanded="{{ str()->startsWith($currentRoute, 'aset') ? 'true' : 'false' }}">
-                Kategori
+        {{-- Kategori --}}
+        @php $isKategori = request()->is('kategori*'); @endphp
+        <li class="nav-item">
+            <a class="nav-link text-white {{ $isKategori ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#kategoriMenu" role="button" aria-expanded="{{ $isKategori ? 'true' : 'false' }}">
+                <i class="bi bi-tags me-2"></i> Kategori
             </a>
-            <div class="collapse {{ str()->startsWith($currentRoute, 'aset') ? 'show' : '' }}" id="submenuKategori">
-                <ul class="list-unstyled ps-3">
+            <div class="collapse {{ $isKategori ? 'show' : '' }}" id="kategoriMenu">
+                <ul class="nav flex-column ms-3">
                     <li>
-                        <a href="{{ route('kategori.index') }}"
-                           class="nav-link {{ $currentRoute == 'kategori.index' ? 'active' : 'text-white' }}">Data Kategori</a>
+                        <a href="{{ route('kategori.index') }}" class="nav-link text-white {{ $route == 'kategori.index' ? 'fw-bold' : '' }}">Data Kategori</a>
                     </li>
                     <li>
-                        <a href="{{ route('kategori.create') }}"
-                           class="nav-link {{ $currentRoute == 'kategori.create' ? 'active' : 'text-white' }}">Tambah Kategori</a>
+                        <a href="{{ route('kategori.create') }}" class="nav-link text-white {{ $route == 'kategori.create' ? 'fw-bold' : '' }}">Tambah Kategori</a>
                     </li>
                 </ul>
             </div>
         </li>
 
-        <!-- Peminjaman -->
-        <li>
-            <a data-bs-toggle="collapse" href="#submenuPeminjaman" role="button"
-               class="nav-link {{ str()->startsWith($currentRoute, 'peminjaman') ? '' : 'text-white' }}"
-               aria-expanded="{{ str()->startsWith($currentRoute, 'peminjaman') ? 'true' : 'false' }}">
-                Peminjaman
+        {{-- Peminjaman --}}
+        @php $isPeminjaman = request()->is('peminjaman*'); @endphp
+        <li class="nav-item">
+            <a class="nav-link text-white {{ $isPeminjaman ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#peminjamanMenu" role="button" aria-expanded="{{ $isPeminjaman ? 'true' : 'false' }}">
+                <i class="bi bi-arrow-left-right me-2"></i> Peminjaman
             </a>
-            <div class="collapse {{ str()->startsWith($currentRoute, 'peminjaman') ? 'show' : '' }}" id="submenuPeminjaman">
-                <ul class="list-unstyled ps-3">
+            <div class="collapse {{ $isPeminjaman ? 'show' : '' }}" id="peminjamanMenu">
+                <ul class="nav flex-column ms-3">
                     <li>
-                        <a href="{{ route('peminjaman.index') }}"
-                           class="nav-link {{ $currentRoute == 'peminjaman.index' ? 'active' : 'text-white' }}">Data Peminjaman</a>
+                        <a href="{{ route('peminjaman.index') }}" class="nav-link text-white {{ $route == 'peminjaman.index' ? 'fw-bold' : '' }}">Data Peminjaman</a>
                     </li>
                     <li>
-                        <a href="{{ route('peminjaman.create') }}"
-                           class="nav-link {{ $currentRoute == 'peminjaman.create' ? 'active' : 'text-white' }}">Catat Peminjaman</a>
-                    </li>
-                    <li>
-                </ul>
-            </div>
-        </li>
-
-        <!-- Laporan -->
-        <li>
-            <a data-bs-toggle="collapse" href="#submenuLaporan" role="button"
-               class="nav-link {{ str()->startsWith($currentRoute, 'laporan') ? '' : 'text-white' }}"
-               aria-expanded="{{ str()->startsWith($currentRoute, 'laporan') ? 'true' : 'false' }}">
-                Laporan
-            </a>
-            <div class="collapse {{ str()->startsWith($currentRoute, 'laporan') ? 'show' : '' }}" id="submenuLaporan">
-                <ul class="list-unstyled ps-3">
-                    <li>
-                        <a href="{{ route('laporan.index') }}"
-                           class="nav-link {{ $currentRoute == 'laporan.index' ? 'active' : 'text-white' }}">Laporan Aset</a>
-                    </li>
-                    <li>
-                        <a href="{{ route('laporan.peminjaman') }}"
-                           class="nav-link {{ $currentRoute == 'laporan.peminjaman' ? 'active' : 'text-white' }}">Laporan Peminjaman</a>
-                    </li>
-                    <li>
-                        <a href="{{ route('laporan.cetakPDF') }}"
-                           class="nav-link {{ $currentRoute == 'laporan.cetakPDF' ? 'active' : 'text-white' }}">Cetak Laporan PDF</a>
+                        <a href="{{ route('peminjaman.create') }}" class="nav-link text-white {{ $route == 'peminjaman.create' ? 'fw-bold' : '' }}">Catat Peminjaman</a>
                     </li>
                 </ul>
             </div>
         </li>
 
-        <!-- Logout -->
-        <li class="mt-3">
+        {{-- Laporan --}}
+        @php $isLaporan = request()->is('laporan*'); @endphp
+        <li class="nav-item">
+            <a class="nav-link text-white {{ $isLaporan ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#laporanMenu" role="button" aria-expanded="{{ $isLaporan ? 'true' : 'false' }}">
+                <i class="bi bi-file-earmark-text me-2"></i> Laporan
+            </a>
+            <div class="collapse {{ $isLaporan ? 'show' : '' }}" id="laporanMenu">
+                <ul class="nav flex-column ms-3">
+                    <li>
+                        <a href="{{ route('laporan.aset') }}" class="nav-link text-white {{ $route == 'laporan.aset' ? 'fw-bold' : '' }}">Laporan Aset</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('laporan.peminjaman') }}" class="nav-link text-white {{ $route == 'laporan.peminjaman' ? 'fw-bold' : '' }}">Laporan Peminjaman</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('laporan.gabungan') }}" class="nav-link text-white {{ $route == 'laporan.gabungan' ? 'fw-bold' : '' }}">Laporan Gabungan</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
+        {{-- Logout --}}
+        <li class="nav-item mt-3">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn btn-sm btn-outline-light w-100">Logout</button>
+                <button type="submit" class="btn btn-light w-100">Logout</button>
             </form>
         </li>
     </ul>
-</div>
+</aside>

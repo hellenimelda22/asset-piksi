@@ -6,35 +6,38 @@ use Illuminate\Http\Request;
 use App\Models\Asset;
 use App\Models\KategoriAset;
 use App\Models\PeminjamanAset;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // Statistik ringkasan
-        $totalAset       = Asset::count();
-        $totalKategori   = KategoriAset::count();
-        $totalPeminjaman = PeminjamanAset::count();
-        $totalDipinjam   = PeminjamanAset::where('status', 'Dipinjam')->count();
+        $jumlahAset = Asset::count();
+        $jumlahKategori = KategoriAset::count();
+        $jumlahPeminjaman = PeminjamanAset::count();
 
-        // Statistik kondisi aset
-        $asetBaik  = Asset::where('kondisi', 'Baik')->count();
-        $asetRusak = Asset::where('kondisi', 'Rusak')->count();
+        // ✅ Jumlah aset yang masih dipinjam (status Dipinjam dan unik per aset)
+        $jumlahDipinjam = PeminjamanAset::where('status', 'Dipinjam')
+                            ->distinct('aset_id')
+                            ->count('aset_id');
 
-        // 5 peminjaman terbaru
+        // ✅ Jumlah berdasarkan kondisi
+        $jumlahBaik = Asset::where('kondisi', 'Baik')->count();
+        $jumlahRusakRingan = Asset::where('kondisi', 'Rusak Ringan')->count();
+        $jumlahRusakBerat = Asset::where('kondisi', 'Rusak Berat')->count();
+
+        // ✅ Ambil peminjaman terbaru (misal 5 terakhir)
         $peminjamanTerbaru = PeminjamanAset::with('aset')
-                                ->latest()
-                                ->take(5)
-                                ->get();
+                                ->latest()->take(5)->get();
 
-        // Kirim data ke view dashboard
         return view('dashboard', compact(
-            'totalAset',
-            'totalKategori',
-            'totalPeminjaman',
-            'totalDipinjam',
-            'asetBaik',
-            'asetRusak',
+            'jumlahAset',
+            'jumlahKategori',
+            'jumlahPeminjaman',
+            'jumlahDipinjam',
+            'jumlahBaik',
+            'jumlahRusakRingan',
+            'jumlahRusakBerat',
             'peminjamanTerbaru'
         ));
     }

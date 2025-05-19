@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,15 +11,12 @@ class KategoriAset extends Model
 {
     use HasFactory;
 
-    // Menyatakan nama tabel yang digunakan
-    protected $table = 'kategori_asets'; 
+    // Menambahkan nama_kategori ke dalam $fillable
+    protected $fillable = ['nama_kategori']; // <-- Tambahkan ini
 
-    // Kolom yang boleh diisi massal
-    protected $fillable = ['nama_kategori'];
-
-    // Relasi: satu kategori punya banyak aset
-    public function asets()
+    // Relasi dengan Asset
+    public function aset()
     {
-        return $this->hasMany(Aset::class, 'kategori_id');
+        return $this->hasMany(Asset::class, 'kategori_id');
     }
 }

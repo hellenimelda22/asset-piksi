@@ -7,20 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class PeminjamanAset extends Model
 {
     use HasFactory;
-    protected $fillable = [
-        'user_id',
-        'nama_peminjam',
-        'aset_id',
-        'tanggal_pinjam',
-        'tanggal_kembali',
-        'status',
-    ];
+    protected $fillable =  ['user_id','nama_peminjam', 'aset_id', 'status', 'tanggal_pinjam', 'tanggal_kembali'];
     
-    public function aset() {
-        return $this->belongsTo(Asset::class);
-    }
+     // Relasi ke model Aset
+     public function aset()
+     {
+         return $this->belongsTo(Asset::class,'aset_id');
+     }
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
 
-    public function user() {
-        return $this->belongsTo(User::class);
-    }
 }

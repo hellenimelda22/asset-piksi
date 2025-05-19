@@ -22,11 +22,11 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($peminjaman as $item)
+            @foreach ($peminjamanTerbaru as $item)
                 <tr>
-                    <td>{{ $item->nama_peminjam }}</td>
-                    <td>{{ $item->aset->kode_aset }}</td>
-                    <td>{{ $item->aset->nama_aset }}</td>
+                    <td>{{ $item->nama_peminjam ?? 'Tidak ada nama' }}</td>
+                    <td>{{ $item->aset ? $item->aset->kode_aset : 'Aset dihapus' }}</td>
+                    <td>{{ $item->aset ? $item->aset->nama_aset : 'Aset dihapus' }}</td>
                     <td>{{ $item->tanggal_pinjam }}</td>
                     <td>
                         @if ($item->status === 'Dikembalikan')

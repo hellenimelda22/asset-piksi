@@ -14,11 +14,32 @@ class AsetController extends Controller
         return view('dashboard');
     }
 
-    public function index()
-    {
-        $aset = Asset::with('kategori')->get();
-        return view('aset.index', compact('aset'));
+    public function index(Request $request)
+{
+    $query = Asset::with('kategori');
+
+    if ($request->filled('kategori_id')) {
+        $query->where('kategori_id', $request->kategori_id);
     }
+    if ($request->filled('nama_aset')) {
+        $query->where('nama_aset', $request->nama_aset);
+    }
+    if ($request->filled('lokasi')) {
+        $query->where('lokasi', $request->lokasi);
+    }
+    if ($request->filled('kondisi')) {
+        $query->where('kondisi', $request->kondisi);
+    }
+
+    $aset = $query->paginate(10);
+
+    $kategoriData = KategoriAset::all();
+    $namaAsetData = Asset::select('nama_aset')->distinct()->orderBy('nama_aset')->pluck('nama_aset');
+    $lokasiData = Asset::select('lokasi')->distinct()->orderBy('lokasi')->pluck('lokasi');
+
+    return view('aset.index', compact('aset', 'kategoriData', 'namaAsetData', 'lokasiData'));
+}
+
 
     public function create()
     {
@@ -27,11 +48,10 @@ class AsetController extends Controller
     }
 
     public function createMultiple()
-{
-    $kategori = KategoriAset::all(); // Ambil semua kategori aset
-    return view('aset.create_multiple', compact('kategori')); // Tampilkan form tambah banyak aset
-}
-
+    {
+        $kategori = KategoriAset::all(); // Ambil semua kategori aset
+        return view('aset.create_multiple', compact('kategori')); // Tampilkan form tambah banyak aset
+    }
 
     public function store(Request $request)
     {
@@ -39,14 +59,20 @@ class AsetController extends Controller
             'kode_aset' => 'required',
             'nama_aset' => 'required',
             'kategori_id' => 'required',
+            'tahun_perolehan' => 'nullable|digits:4',
             'lokasi' => 'nullable',
             'kondisi' => 'required',
             'gambar_aset' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($request->hasFile('gambar_aset')) {
-            $data['gambar_aset'] = $request->file('gambar_aset')->store('aset', 'public');
+            $file = $request->file('gambar_aset');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/aset'), $filename);
+            $data['gambar_aset'] = 'uploads/aset/' . $filename; // simpan path ke DB
         }
+
+        $data['status'] = 'Tersedia'; // default status
 
         Asset::create($data);
 
@@ -57,33 +83,28 @@ class AsetController extends Controller
     {
         $request->validate([
             'nama_aset' => 'required|string',
-            'kategori_id' => 'required|exists:kategori_asets,id',
             'jumlah' => 'required|integer|min:1',
+            'kategori_id' => 'required|exists:kategori_asets,id',
+            'tahun_perolehan' => 'required|integer',
+            'kondisi' => 'required|string',
+            'lokasi' => 'required|string',
         ]);
 
-        $namaAset = $request->nama_aset;
-        $kategoriId = $request->kategori_id;
-        $jumlah = $request->jumlah;
+        for ($i = 0; $i < $request->jumlah; $i++) {
+            $kode = strtoupper(substr($request->nama_aset, 0, 3)) . '-' . strtoupper(uniqid());
 
-        // Ambil kode terakhir dari aset dengan nama yang sama
-        $lastAset = Asset::where('nama_aset', $namaAset)->orderBy('id', 'desc')->first();
-        $start = 1;
-
-        if ($lastAset && preg_match('/-(\d+)$/', $lastAset->kode_aset, $matches)) {
-            $start = (int) $matches[1] + 1;
-        }
-
-        for ($i = $start; $i < $start + $jumlah; $i++) {
             Asset::create([
-                'kode_aset' => strtoupper(substr($namaAset, 0, 3)) . '-' . str_pad($i, 3, '0', STR_PAD_LEFT),
-                'nama_aset' => $namaAset,
-                'kategori_id' => $kategoriId,
+                'kode_aset' => $kode,
+                'nama_aset' => $request->nama_aset,
+                'kategori_id' => $request->kategori_id,
+                'tahun_perolehan' => $request->tahun_perolehan,
+                'kondisi' => $request->kondisi,
+                'lokasi' => $request->lokasi,
                 'status' => 'Tersedia',
-                'kondisi' => 'Baik',
             ]);
         }
 
-        return redirect()->route('aset.index')->with('success', $jumlah . ' unit aset berhasil ditambahkan.');
+        return redirect()->route('aset.index')->with('success', 'Berhasil menambahkan aset sebanyak ' . $request->jumlah . ' unit.');
     }
 
     public function edit($id)
@@ -101,6 +122,7 @@ class AsetController extends Controller
             'kode_aset' => 'required',
             'nama_aset' => 'required',
             'kategori_id' => 'required',
+            'tahun_perolehan' => 'required|integer',
             'lokasi' => 'nullable',
             'kondisi' => 'required',
             'gambar_aset' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -110,7 +132,7 @@ class AsetController extends Controller
             if ($aset->gambar_aset) {
                 Storage::disk('public')->delete($aset->gambar_aset);
             }
-            $data['gambar_aset'] = $request->file('gambar_aset')->store('aset', 'public');
+            $data['gambar_aset'] = $request->file('gambar_aset')->store('asets', 'public');
         }
 
         $aset->update($data);
@@ -121,19 +143,32 @@ class AsetController extends Controller
     public function destroy($id)
     {
         $aset = Asset::findOrFail($id);
-        if ($aset->gambar_aset) {
-            Storage::disk('public')->delete($aset->gambar_aset);
-        }
         $aset->delete();
 
-        return redirect()->route('aset.index')->with('success', 'Aset berhasil dihapus.');
+        return redirect()->back()->with('success', 'Data berhasil dihapus');
     }
 
-    // Menambahkan method show untuk menampilkan detail aset berdasarkan ID
     public function show($id)
     {
-        // Cari aset berdasarkan ID
         $aset = Asset::with('kategori')->findOrFail($id);
-        return view('aset.show', compact('aset'));  // Mengirim data aset ke view
+        return view('aset.show', compact('aset'));
+    }
+
+    public function laporan(Request $request)
+    {
+        $query = Asset::with('kategori');
+
+        if ($request->filled('kategori_id')) {
+            $query->where('kategori_id', $request->kategori_id);
+        }
+
+        if ($request->filled('nama_aset')) {
+            $query->where('nama_aset', 'like', '%' . $request->nama_aset . '%');
+        }
+
+        $aset = $query->paginate(10);
+        $kategoriData = KategoriAset::all();
+
+        return view('laporan.index', compact('aset', 'kategoriData'));
     }
 }

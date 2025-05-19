@@ -30,7 +30,7 @@
             <th>Gambar Aset</th>
             <td>
                 @if ($aset->gambar_aset)
-                    <img src="{{ Storage::url($aset->gambar_aset) }}" width="200">
+                    <img src="{{ asset('uploads/aset/' . $aset->gambar_aset) }}" width="200">
                 @else
                     <span>Belum ada gambar</span>
                 @endif

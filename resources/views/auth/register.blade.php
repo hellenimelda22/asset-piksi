@@ -1,40 +1,39 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Register</title>
-</head>
-<body>
-    <h2>Form Registrasi</h2>
+@extends('layouts.auth')
 
-    @if ($errors->any())
-        <div>
-            <strong>Terjadi kesalahan:</strong>
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+@section('content')
+<div class="text-center mb-4">
+    <img src="{{ asset('images/logo_piksi.png') }}" alt="Logo Piksi" height="60">
+    <h4 class="mt-3">Daftar Akun Baru</h4>
+</div>
 
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
-        <label>Nama:</label>
-        <input type="text" name="name" required><br>
+<form method="POST" action="{{ route('register') }}">
+    @csrf
+    <div class="mb-3">
+        <label for="name">Nama Lengkap</label>
+        <input id="name" type="text" class="form-control" name="name" required autofocus>
+    </div>
 
-        <label>Email:</label>
-        <input type="email" name="email" required><br>
+    <div class="mb-3">
+        <label for="email">Email address</label>
+        <input id="email" type="email" class="form-control" name="email" required>
+    </div>
 
-        <label>Password:</label>
-        <input type="password" name="password" required><br>
+    <div class="mb-3">
+        <label for="password">Password</label>
+        <input id="password" type="password" class="form-control" name="password" required>
+    </div>
 
-        <label>Konfirmasi Password:</label>
-        <input type="password" name="password_confirmation" required><br>
+    <div class="mb-3">
+        <label for="password_confirmation">Konfirmasi Password</label>
+        <input id="password_confirmation" type="password" class="form-control" name="password_confirmation" required>
+    </div>
 
-        <button type="submit">Daftar</button>
-    </form>
+    <div class="d-grid">
+        <button type="submit" class="btn btn-primary">Daftar</button>
+    </div>
 
-    <p>Sudah punya akun? <a href="{{ route('login') }}">Login</a></p>
-</body>
-</html>
+    <div class="mt-3 text-center">
+        Sudah punya akun? <a href="{{ route('login') }}">Login</a>
+    </div>
+</form>
+@endsection

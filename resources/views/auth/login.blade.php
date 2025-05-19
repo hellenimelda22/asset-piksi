@@ -1,31 +1,70 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
-<body>
-    <h2>Login</h2>
+@extends('layouts.auth')
 
-    <!-- Tampilkan pesan sukses jika ada -->
-    @if(session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
+@section('content')
+<div class="text-center mb-4">
+    <img src="{{ asset('images/logo_piksi.png') }}" alt="Logo Piksi" height="60">
+    <h4 class="mt-3">Login Sistem Informasi Aset</h4>
+</div>
+
+{{-- Notifikasi sukses login --}}
+@if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+{{-- Notifikasi error login --}}
+@if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+{{-- Validasi error lainnya --}}
+@if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+<form method="POST" action="{{ route('login') }}">
+    @csrf
+    <div class="mb-3">
+        <label for="email">Email</label>
+        <input id="email" type="email"
+               class="form-control @error('email') is-invalid @enderror"
+               name="email" value="{{ old('email') }}" required autofocus>
+    </div>
+
+    <div class="mb-3">
+        <label for="password">Password</label>
+        <input id="password" type="password"
+               class="form-control @error('password') is-invalid @enderror"
+               name="password" required>
+    </div>
+
+    <div class="d-grid">
+        <button type="submit" class="btn btn-primary">Login</button>
+    </div>
+
+    @if (Route::has('password.request'))
+        <div class="mt-2 text-center">
+            <a class="text-decoration-none text-primary" href="{{ route('password.request') }}">
+                Lupa Password?
+            </a>
+        </div>
     @endif
 
-    <form method="POST" action="{{ route('login') }}">
-    @csrf
-    <label>Email:</label>
-    <input type="email" name="email" required>
-    <br>
-    <label>Password:</label>
-    <input type="password" name="password" required>
-    <br>
-    <button type="submit">Login</button>
+    <div class="mt-3 text-center">
+        Belum punya akun?
+        <a href="{{ route('register') }}" class="text-decoration-none">Daftar di sini</a>
+    </div>
 </form>
-
-
-    <!-- Tombol untuk pengguna yang belum memiliki akun -->
-    <p>Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></p>
-</body>
-</html>
+@endsection
