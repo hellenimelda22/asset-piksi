@@ -4,7 +4,7 @@
 <div class="container">
     <h2>Data Aset</h2>
     <a href="{{ route('aset.create') }}" class="btn btn-primary">Tambah Aset</a>
-    <table class="table table-bordered mt-3">
+    <table class="table table-sm align-middle mt-3">
         <thead>
             <tr>
                 <th>Kode Aset</th>

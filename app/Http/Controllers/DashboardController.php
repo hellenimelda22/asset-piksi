@@ -11,34 +11,41 @@ use Carbon\Carbon;
 class DashboardController extends Controller
 {
     public function index()
-    {
-        $jumlahAset = Asset::count();
-        $jumlahKategori = KategoriAset::count();
-        $jumlahPeminjaman = PeminjamanAset::count();
+{
+    $jumlahAset = Asset::count();
+    $jumlahKategori = KategoriAset::count();
+    $jumlahPeminjaman = PeminjamanAset::count();
 
-        // ✅ Jumlah aset yang masih dipinjam (status Dipinjam dan unik per aset)
-        $jumlahDipinjam = PeminjamanAset::where('status', 'Dipinjam')
-                            ->distinct('aset_id')
-                            ->count('aset_id');
+    $jumlahDipinjam = PeminjamanAset::where('status', 'Dipinjam')
+                        ->distinct('aset_id')
+                        ->count('aset_id');
 
-        // ✅ Jumlah berdasarkan kondisi
-        $jumlahBaik = Asset::where('kondisi', 'Baik')->count();
-        $jumlahRusakRingan = Asset::where('kondisi', 'Rusak Ringan')->count();
-        $jumlahRusakBerat = Asset::where('kondisi', 'Rusak Berat')->count();
+    $jumlahBaik = Asset::where('kondisi', 'Baik')->count();
+    $jumlahRusakRingan = Asset::where('kondisi', 'Rusak Ringan')->count();
+    $jumlahRusakBerat = Asset::where('kondisi', 'Rusak Berat')->count();
+    $jumlahDalamPerbaikan = Asset::where('kondisi', 'Dalam Perbaikan')->count();
+    $jumlahAktif = Asset::where('kondisi', 'Aktif')->count();
 
-        // ✅ Ambil peminjaman terbaru (misal 5 terakhir)
-        $peminjamanTerbaru = PeminjamanAset::with('aset')
-                                ->latest()->take(5)->get();
+    $peminjamanTerbaru = PeminjamanAset::with('aset')
+                            ->latest()
+                            ->take(5)
+                            ->get();
 
-        return view('dashboard', compact(
-            'jumlahAset',
-            'jumlahKategori',
-            'jumlahPeminjaman',
-            'jumlahDipinjam',
-            'jumlahBaik',
-            'jumlahRusakRingan',
-            'jumlahRusakBerat',
-            'peminjamanTerbaru'
-        ));
-    }
+    // ✅ Jumlah aset per kategori via kategori (relasi resmi)
+    $jumlahAsetPerKategori = KategoriAset::withCount('aset')->pluck('aset_count', 'nama_kategori');
+
+    return view('dashboard', compact(
+        'jumlahAset',
+        'jumlahKategori',
+        'jumlahPeminjaman',
+        'jumlahDipinjam',
+        'jumlahBaik',
+        'jumlahRusakRingan',
+        'jumlahRusakBerat',
+        'jumlahDalamPerbaikan',
+        'jumlahAktif',
+        'peminjamanTerbaru',
+        'jumlahAsetPerKategori'
+    ));
+}
 }

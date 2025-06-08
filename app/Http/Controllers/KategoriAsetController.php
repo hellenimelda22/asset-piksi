@@ -10,10 +10,9 @@ class KategoriAsetController extends Controller
     public function index()
     {
         // Ambil semua data kategori
-        $kategori = KategoriAset::all();  // Mengambil semua data kategori dari database
+       $kategori = KategoriAset::withCount('aset')->get();
 
-        // Kirimkan data kategori ke tampilan
-        return view('kategori.index', compact('kategori'));  // Mengirim variabel kategori ke tampilan
+       return view('kategori.index', compact('kategori'));
     }
 
     public function create()

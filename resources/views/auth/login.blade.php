@@ -3,7 +3,7 @@
 @section('content')
 <div class="text-center mb-4">
     <img src="{{ asset('images/logo_piksi.png') }}" alt="Logo Piksi" height="60">
-    <h4 class="mt-3">Login Sistem Informasi Aset</h4>
+    <h4 class="mt-3">Login SI-Aset</h4>
 </div>
 
 {{-- Notifikasi sukses login --}}

@@ -33,8 +33,12 @@ class ResetPasswordController extends Controller
             }
         );
 
-        return $status === Password::PASSWORD_RESET
-            ? redirect()->route('login')->with('status', __($status))
-            : back()->withErrors(['email' => [__($status)]]);
+        // ✅ Flash pesan sukses & redirect ke login
+        if ($status === Password::PASSWORD_RESET) {
+            return redirect()->route('login')->with('success', 'Password berhasil direset. Silakan login dengan password baru.');
+        }
+
+        // ❌ Jika gagal
+        return back()->withErrors(['email' => [__($status)]]);
     }
 }

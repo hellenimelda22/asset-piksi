@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Asset;
 use App\Models\KategoriAset;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class AsetController extends Controller
 {
@@ -15,31 +14,47 @@ class AsetController extends Controller
     }
 
     public function index(Request $request)
-{
-    $query = Asset::with('kategori');
+    {
+        $kategoriData = KategoriAset::all();
+        $namaAsetData = Asset::select('nama_aset')->distinct()->orderBy('nama_aset')->pluck('nama_aset');
+        $lokasiData = Asset::select('lokasi')->distinct()->orderBy('lokasi')->pluck('lokasi');
+        $tahunList = array_reverse(range(2000, date('Y')));
 
-    if ($request->filled('kategori_id')) {
-        $query->where('kategori_id', $request->kategori_id);
+        $query = Asset::with('kategori');
+
+        if ($request->filled('kategori_id')) {
+            $query->where('kategori_id', $request->kategori_id);
+        }
+
+        if ($request->filled('nama_aset')) {
+            $query->where('nama_aset', 'like', '%' . $request->nama_aset . '%');
+        }
+
+        if ($request->filled('lokasi')) {
+            $query->where('lokasi', 'like', '%' . $request->lokasi . '%');
+        }
+
+        if ($request->filled('kondisi')) {
+            $query->where('kondisi', $request->kondisi);
+        }
+
+        if ($request->filled('tahun_perolehan')) {
+            $query->where('tahun_perolehan', $request->tahun_perolehan);
+        }
+
+        $aset = $query->paginate(10);
+        $kategoriId = $request->kategori_id;
+        $showLuas = $kategoriId == 4 || $kategoriId == 8;
+
+        return view('aset.index', compact(
+            'aset',
+            'kategoriData',
+            'namaAsetData',
+            'lokasiData',
+            'tahunList',
+            'showLuas'
+        ));
     }
-    if ($request->filled('nama_aset')) {
-        $query->where('nama_aset', $request->nama_aset);
-    }
-    if ($request->filled('lokasi')) {
-        $query->where('lokasi', $request->lokasi);
-    }
-    if ($request->filled('kondisi')) {
-        $query->where('kondisi', $request->kondisi);
-    }
-
-    $aset = $query->paginate(10);
-
-    $kategoriData = KategoriAset::all();
-    $namaAsetData = Asset::select('nama_aset')->distinct()->orderBy('nama_aset')->pluck('nama_aset');
-    $lokasiData = Asset::select('lokasi')->distinct()->orderBy('lokasi')->pluck('lokasi');
-
-    return view('aset.index', compact('aset', 'kategoriData', 'namaAsetData', 'lokasiData'));
-}
-
 
     public function create()
     {
@@ -49,34 +64,45 @@ class AsetController extends Controller
 
     public function createMultiple()
     {
-        $kategori = KategoriAset::all(); // Ambil semua kategori aset
-        return view('aset.create_multiple', compact('kategori')); // Tampilkan form tambah banyak aset
+        $kategori = KategoriAset::all();
+        return view('aset.create_multiple', compact('kategori'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'kode_aset' => 'required',
+            'kode_aset' => 'required|unique:asets,kode_aset',
             'nama_aset' => 'required',
-            'kategori_id' => 'required',
+            'kategori_id' => 'required|integer',
             'tahun_perolehan' => 'nullable|digits:4',
             'lokasi' => 'nullable',
             'kondisi' => 'required',
             'gambar_aset' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'luas' => function ($attribute, $value, $fail) use ($request) {
+                if (in_array($request->kategori_id, [4, 8]) && empty($value)) {
+                    $fail('Kolom luas wajib diisi untuk kategori Bangunan atau Lahan.');
+                }
+            },
         ]);
 
         if ($request->hasFile('gambar_aset')) {
             $file = $request->file('gambar_aset');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/aset'), $filename);
-            $data['gambar_aset'] = 'uploads/aset/' . $filename; // simpan path ke DB
+            $file->move(public_path('images'), $filename);
+            $data['gambar_aset'] = 'images/' . $filename;
         }
 
-        $data['status'] = 'Tersedia'; // default status
+        $data['status'] = 'Tersedia';
+        $data['luas'] = in_array($request->kategori_id, [4, 8]) ? $request->luas : null;
 
         Asset::create($data);
 
-        return redirect()->route('aset.index')->with('success', 'Aset berhasil ditambahkan.');
+        $totalAset = Asset::count();
+        $perPage = 10;
+        $lastPage = ceil($totalAset / $perPage);
+
+        return redirect()->route('aset.index', ['page' => $lastPage])
+            ->with('success', 'Aset berhasil ditambahkan!');
     }
 
     public function storeMultiple(Request $request)
@@ -88,7 +114,15 @@ class AsetController extends Controller
             'tahun_perolehan' => 'required|integer',
             'kondisi' => 'required|string',
             'lokasi' => 'required|string',
+            'gambar_aset' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        $filename = null;
+        if ($request->hasFile('gambar_aset')) {
+            $file = $request->file('gambar_aset');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images'), $filename);
+        }
 
         for ($i = 0; $i < $request->jumlah; $i++) {
             $kode = strtoupper(substr($request->nama_aset, 0, 3)) . '-' . strtoupper(uniqid());
@@ -101,10 +135,16 @@ class AsetController extends Controller
                 'kondisi' => $request->kondisi,
                 'lokasi' => $request->lokasi,
                 'status' => 'Tersedia',
+                'gambar_aset' => $filename ? 'images/' . $filename : null,
             ]);
         }
 
-        return redirect()->route('aset.index')->with('success', 'Berhasil menambahkan aset sebanyak ' . $request->jumlah . ' unit.');
+        $totalAset = Asset::count();
+        $perPage = 10;
+        $lastPage = ceil($totalAset / $perPage);
+
+        return redirect()->route('aset.index', ['page' => $lastPage])
+            ->with('success', 'Berhasil menambahkan aset sebanyak ' . $request->jumlah . ' unit.');
     }
 
     public function edit($id)
@@ -118,26 +158,29 @@ class AsetController extends Controller
     {
         $aset = Asset::findOrFail($id);
 
-        $data = $request->validate([
-            'kode_aset' => 'required',
-            'nama_aset' => 'required',
-            'kategori_id' => 'required',
+        $validated = $request->validate([
+            'kode_aset' => 'required|string|max:100',
+            'nama_aset' => 'required|string|max:100',
+            'kategori_id' => 'required|exists:kategori_asets,id',
             'tahun_perolehan' => 'required|integer',
-            'lokasi' => 'nullable',
-            'kondisi' => 'required',
-            'gambar_aset' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'lokasi' => 'required|string|max:100',
+            'kondisi' => 'required|string|max:100',
+            'gambar_aset' => 'nullable|image|max:2048',
         ]);
 
         if ($request->hasFile('gambar_aset')) {
-            if ($aset->gambar_aset) {
-                Storage::disk('public')->delete($aset->gambar_aset);
-            }
-            $data['gambar_aset'] = $request->file('gambar_aset')->store('asets', 'public');
+            $file = $request->file('gambar_aset');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images'), $filename);
+            $validated['gambar_aset'] = 'images/' . $filename;
         }
 
-        $aset->update($data);
+        $aset->update($validated);
 
-        return redirect()->route('aset.index')->with('success', 'Aset berhasil diupdate.');
+        $page = $request->input('page', 1);
+
+        return redirect()->route('aset.index', ['page' => $page])
+            ->with('success', 'Data aset berhasil diperbarui.');
     }
 
     public function destroy($id)

@@ -6,7 +6,7 @@
 <aside class="sidebar text-white p-3">
     <div class="text-center mb-4">
         <img src="{{ asset('images/logo_piksi.png') }}" alt="Logo" width="80">
-        <h5 class="mt-2">SI ASET</h5>
+        <h5 class="mt-2">SI-ASET</h5>
     </div>
 
     <ul class="nav flex-column">
@@ -20,12 +20,12 @@
         @php $isAset = request()->is('aset*'); @endphp
         <li class="nav-item">
             <a class="nav-link text-white {{ $isAset ? '' : 'collapsed' }}" data-bs-toggle="collapse" href="#asetMenu" role="button" aria-expanded="{{ $isAset ? 'true' : 'false' }}">
-                <i class="bi bi-box me-2"></i> Data Aset
+                <i class="bi bi-box me-2"></i> Aset
             </a>
             <div class="collapse {{ $isAset ? 'show' : '' }}" id="asetMenu">
                 <ul class="nav flex-column ms-3">
                     <li>
-                        <a href="{{ route('aset.index') }}" class="nav-link text-white {{ $route == 'aset.index' ? 'fw-bold' : '' }}">Lihat Aset</a>
+                        <a href="{{ route('aset.index') }}" class="nav-link text-white {{ $route == 'aset.index' ? 'fw-bold' : '' }}">Data Aset</a>
                     </li>
                     <li>
                         <a href="{{ route('aset.create') }}" class="nav-link text-white {{ $route == 'aset.create' ? 'fw-bold' : '' }}">Tambah Aset</a>
@@ -64,7 +64,7 @@
                         <a href="{{ route('peminjaman.index') }}" class="nav-link text-white {{ $route == 'peminjaman.index' ? 'fw-bold' : '' }}">Data Peminjaman</a>
                     </li>
                     <li>
-                        <a href="{{ route('peminjaman.create') }}" class="nav-link text-white {{ $route == 'peminjaman.create' ? 'fw-bold' : '' }}">Catat Peminjaman</a>
+                        <a href="{{ route('peminjaman.create') }}" class="nav-link text-white {{ $route == 'peminjaman.create' ? 'fw-bold' : '' }}">Tambah Peminjaman</a>
                     </li>
                 </ul>
             </div>

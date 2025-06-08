@@ -9,16 +9,28 @@ use Illuminate\Http\Request;
 class PeminjamanAsetController extends Controller
 {
     // Method untuk menampilkan jumlah aset dan peminjaman terbaru
-    public function index()
+   public function index(Request $request)
     {
-        // Mengambil jumlah aset
-        $jumlahAset = Asset::count();
+        $query = PeminjamanAset::with('aset', 'user')->latest();
 
-        // Mengambil peminjaman terbaru beserta data aset yang dipinjam
-        $peminjamanTerbaru = PeminjamanAset::with('aset', 'user')->latest()->get();
+        // Filter: Status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
 
-        // Mengirimkan data ke view
-        return view('peminjaman.index', compact('jumlahAset', 'peminjamanTerbaru'));
+        // Filter: Nama Peminjam
+        if ($request->filled('nama_peminjam')) {
+            $query->where('nama_peminjam', 'like', '%' . $request->nama_peminjam . '%');
+        }
+
+        // Filter: Tanggal Pinjam
+        if ($request->filled('tanggal_pinjam')) {
+            $query->whereDate('tanggal_pinjam', $request->tanggal_pinjam);
+        }
+
+        $peminjaman = $query->paginate(10); // Gunakan paginate agar lebih rapi
+
+        return view('peminjaman.index', compact('peminjaman'));
     }
 
     // Method untuk menampilkan form tambah peminjaman

@@ -2,12 +2,39 @@
 
 @section('title', 'Edit Aset')
 
+@push('styles')
+<style>
+    #tahun_perolehan {
+        width: 160px;
+        font-size: 14px;
+        padding: 6px 8px;
+        height: auto;
+    }
+
+    select#tahun_perolehan option {
+        font-size: 14px;
+        padding: 4px;
+    }
+
+    body {
+        overflow: visible !important;
+    }
+
+    select {
+        position: relative;
+        z-index: 1000;
+    }
+</style>
+@endpush
+
 @section('content')
-<h2>Edit Aset</h2>
+<div class="container mt-4">
+    <h4 class="mb-4 fw-bold">Edit Aset</h4>
 
 <form action="{{ route('aset.update', $aset->id) }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
+    <input type="hidden" name="page" value="{{ request('page') }}">
 
     <div class="mb-3">
         <label for="kode_aset" class="form-label">Kode Aset</label>
@@ -41,14 +68,36 @@
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
-    <div class="mb-3">
-         <label for="tahun_perolehan" class="form-label">Tahun Perolehan</label>
-         <input type="number" name="tahun_perolehan" id="tahun_perolehan" class="form-control @error('tahun_perolehan') is-invalid @enderror" 
-             value="{{ old('tahun_perolehan') }}" placeholder="Masukkan Tahun Perolehan">
-          @error('tahun_perolehan')
-              <div class="invalid-feedback">{{ $message }}</div>
-         @enderror
+
+    {{-- Field Luas (muncul jika kategori_id = 4 atau 8) --}}
+    <div class="mb-3 {{ in_array(old('kategori_id', $aset->kategori_id), [4, 8]) ? '' : 'd-none' }}" id="luas_field">
+        <label for="luas" class="form-label">Luas (m²)</label>
+        <input type="number" name="luas" id="luas" class="form-control @error('luas') is-invalid @enderror"
+            value="{{ old('luas', $aset->luas) }}" placeholder="Masukkan luas aset">
+        @error('luas')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
     </div>
+
+    <div class="mb-3">
+        <label for="tahun_perolehan" class="form-label">Tahun Perolehan</label>
+        <select name="tahun_perolehan" id="tahun_perolehan" class="form-select @error('tahun_perolehan') is-invalid @enderror">
+            @php
+                $tahunSekarang = date('Y');
+                $tahunMulai = 1980;
+            @endphp
+            <option value="">-- Pilih Tahun --</option>
+            @for($tahun = $tahunSekarang; $tahun >= $tahunMulai; $tahun--)
+                <option value="{{ $tahun }}" {{ old('tahun_perolehan', $aset->tahun_perolehan) == $tahun ? 'selected' : '' }}>
+                    {{ $tahun }}
+                </option>
+            @endfor
+        </select>
+        @error('tahun_perolehan')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
     <div class="mb-3">
         <label for="lokasi" class="form-label">Lokasi</label>
         <input type="text" name="lokasi" id="lokasi" class="form-control @error('lokasi') is-invalid @enderror"
@@ -60,10 +109,14 @@
 
     <div class="mb-3">
         <label for="kondisi" class="form-label">Kondisi</label>
-        <select name="kondisi" id="kondisi" class="form-select @error('kondisi') is-invalid @enderror">
-            <option value="Baik" {{ old('kondisi', $aset->kondisi) == 'Baik' ? 'selected' : '' }}>Baik</option>
-            <option value="Rusak" {{ old('kondisi', $aset->kondisi) == 'Rusak' ? 'selected' : '' }}>Rusak</option>
-        </select>
+        @php $selected = old('kondisi', $aset->kondisi ?? '') @endphp
+            <select name="kondisi" id="kondisi" class="form-select @error('kondisi') is-invalid @enderror">
+                <option value="Baik" {{ $selected == 'Baik' ? 'selected' : '' }}>Baik</option>
+                <option value="Rusak Ringan" {{ $selected == 'Rusak Ringan' ? 'selected' : '' }}>Rusak Ringan</option>
+                <option value="Rusak Berat" {{ $selected == 'Rusak Berat' ? 'selected' : '' }}>Rusak Berat</option>
+                <option value="Dalam Perbaikan" {{ $selected == 'Dalam Perbaikan' ? 'selected' : '' }}>Dalam Perbaikan</option>
+                <option value="Aktif" {{ $selected == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+            </select>
         @error('kondisi')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -75,20 +128,19 @@
         @error('gambar_aset')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
-        @if ($aset->gambar_aset)
-            <img src="{{ asset($aset->gambar_aset) }}" width="100" class="mt-2" alt="Gambar Aset">
-        @endif
     </div>
 
     <button type="submit" class="btn btn-primary px-4 py-2">
         <i class="bi bi-pencil-square me-2"></i> Update
     </button>
-    <a href="{{ route('aset.index') }}" class="btn btn-secondary px-4 py-2 ms-2">
+    <a href="{{ route('aset.index', ['page' => request('page')]) }}" class="btn btn-secondary px-4 py-2 ms-2">
         <i class="bi bi-arrow-left-circle-fill me-2"></i> Kembali
     </a>
 </form>
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     $(document).ready(function() {
         $('#kategori_id').select2({
@@ -96,6 +148,19 @@
             allowClear: true,
             width: '100%'
         });
+
+        function toggleLuasField() {
+            const selected = $('#kategori_id').val();
+            if (selected == 4 || selected == 8) {
+                $('#luas_field').removeClass('d-none');
+            } else {
+                $('#luas_field').addClass('d-none');
+                $('#luas').val('');
+            }
+        }
+
+        toggleLuasField(); // Jalankan saat load
+        $('#kategori_id').on('change', toggleLuasField); // Jalankan saat pilihan berubah
     });
 </script>
 @endpush

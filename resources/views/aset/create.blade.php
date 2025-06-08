@@ -3,7 +3,8 @@
 @section('title', 'Tambah Aset')
 
 @section('content')
-<h2>Tambah Aset Baru</h2>
+<div class="container mt-4">
+    <h4 class="mb-4 fw-bold">Tambah Aset</h4>
 
 <form action="{{ route('aset.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
@@ -40,13 +41,34 @@
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
+
+    {{-- FIELD LUAS (muncul kalau kategori ID = 4 atau 8) --}}
+    <div class="mb-3 d-none" id="luas_field">
+        <label for="luas" class="form-label">Luas (m²)</label>
+        <input type="number" name="luas" id="luas" class="form-control @error('luas') is-invalid @enderror" 
+            value="{{ old('luas') }}" placeholder="Masukkan luas aset (khusus Bangunan atau Lahan)">
+        @error('luas')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
     <div class="mb-3">
-         <label for="tahun_perolehan" class="form-label">Tahun Perolehan</label>
-         <input type="number" name="tahun_perolehan" id="tahun_perolehan" class="form-control @error('tahun_perolehan') is-invalid @enderror" 
-             value="{{ old('tahun_perolehan') }}" placeholder="Masukkan Tahun Perolehan">
-          @error('tahun_perolehan')
-              <div class="invalid-feedback">{{ $message }}</div>
-         @enderror
+        <label for="tahun_perolehan" class="form-label">Tahun Perolehan</label>
+        <select name="tahun_perolehan" id="tahun_perolehan" class="form-select @error('tahun_perolehan') is-invalid @enderror">
+            @php
+                $tahunSekarang = date('Y');
+                $tahunMulai = 1980;
+            @endphp
+            <option value="">-- Pilih Tahun --</option>
+            @for($tahun = $tahunSekarang; $tahun >= $tahunMulai; $tahun--)
+               <option value="{{ $tahun }}" {{ old('tahun_perolehan') == $tahun ? 'selected' : '' }}>
+                    {{ $tahun }}
+                </option>
+            @endfor
+        </select>
+        @error('tahun_perolehan')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
     </div>
 
     <div class="mb-3">
@@ -60,10 +82,13 @@
 
     <div class="mb-3">
         <label for="kondisi" class="form-label">Kondisi</label>
-        <select name="kondisi" id="kondisi" class="form-select @error('kondisi') is-invalid @enderror">
+        <select name="kondisi" class="form-select @error('kondisi') is-invalid @enderror">
             <option value="">-- Pilih Kondisi --</option>
             <option value="Baik" {{ old('kondisi') == 'Baik' ? 'selected' : '' }}>Baik</option>
-            <option value="Rusak" {{ old('kondisi') == 'Rusak' ? 'selected' : '' }}>Rusak</option>
+            <option value="Rusak Ringan" {{ old('kondisi') == 'Rusak Ringan' ? 'selected' : '' }}>Rusak Ringan</option>
+            <option value="Rusak Berat" {{ old('kondisi') == 'Rusak Berat' ? 'selected' : '' }}>Rusak Berat</option>
+            <option value="Dalam Perbaikan" {{ old('kondisi') == 'Dalam Perbaikan' ? 'selected' : '' }}>Dalam Perbaikan</option>
+            <option value="Aktif" {{ old('kondisi') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
         </select>
         @error('kondisi')
             <div class="invalid-feedback">{{ $message }}</div>
@@ -94,6 +119,19 @@
             allowClear: true,
             width: '100%'
         });
+
+        function toggleLuasField() {
+            const selected = $('#kategori_id').val();
+            if (selected == 4 || selected == 8) {
+                $('#luas_field').removeClass('d-none');
+            } else {
+                $('#luas_field').addClass('d-none');
+                $('#luas').val('');
+            }
+        }
+
+        toggleLuasField();
+        $('#kategori_id').on('change', toggleLuasField);
     });
 </script>
 @endpush

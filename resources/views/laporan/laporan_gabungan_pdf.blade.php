@@ -27,18 +27,13 @@
         }
 
         .logo img {
-            width: 80px;
+            width: 65px;
         }
 
         .title {
             display: table-cell;
             text-align: center;
             vertical-align: middle;
-        }
-
-        .title h3 {
-            margin: 0;
-            font-size: 18px;
         }
 
         .title h4 {
@@ -50,6 +45,7 @@
             font-size: 14px;
             margin-top: 30px;
             margin-bottom: 10px;
+            text-align: center;
         }
 
         table {
@@ -64,7 +60,7 @@
         }
 
         th {
-            background-color: #f2f2f2;
+            background-color: rgb(221, 221, 221);
         }
 
         th, td {
@@ -88,7 +84,7 @@
             <img src="{{ public_path('images/logo_piksi.png') }}" alt="Logo">
         </div>
         <div class="title">
-            <h3>Laporan Gabungan Aset & Peminjaman</h3>
+            <h4>LAPORAN ASET & PEMINJAMAN</h4>
             <h4>POLITEKNIK PIKSI INPUT SERANG</h4>
         </div>
     </div>
@@ -97,21 +93,25 @@
     <table>
         <thead>
             <tr>
-                <th>ID Aset</th>
+                <th>No</th>
+                <th>Kode Aset</th>
                 <th>Nama Aset</th>
                 <th>Kategori</th>
-                <th>Status</th>
+                <th>Tahun Perolehan</th>
                 <th>Lokasi</th>
+                <th>Kondisi</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($aset as $item)
+            @foreach ($aset as $index => $item)
                 <tr>
-                    <td>{{ $item->id }}</td>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $item->kode_aset }}</td>
                     <td>{{ $item->nama_aset }}</td>
-                    <td>{{ $item->kategori->nama_kategori }}</td>
-                    <td>{{ $item->status }}</td>
+                    <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
+                    <td>{{ $item->tahun_perolehan }}</td>
                     <td>{{ $item->lokasi }}</td>
+                    <td>{{ $item->kondisi }}</td>
                 </tr>
             @endforeach
         </tbody>
@@ -121,22 +121,24 @@
     <table>
         <thead>
             <tr>
-                <th>ID Peminjaman</th>
+                <th>No</th>
                 <th>Nama Peminjam</th>
-                <th>Aset yang Dipinjam</th>
+                <th>Nama Aset</th>
                 <th>Tanggal Pinjam</th>
                 <th>Tanggal Kembali</th>
                 <th>Status</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($peminjaman as $item)
+            @foreach ($peminjaman as $index => $item)
                 <tr>
-                    <td>{{ $item->id }}</td>
+                    <td>{{ $index + 1 }}</td>
                     <td>{{ $item->nama_peminjam }}</td>
                     <td>{{ $item->aset->nama_aset ?? 'N/A' }}</td>
-                    <td>{{ date('d-m-Y', strtotime($item->tanggal_pinjam)) }}</td>
-                    <td>{{ date('d-m-Y', strtotime($item->tanggal_kembali)) }}</td>
+                    <td>{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d-m-Y') }}</td>
+                    <td>
+                        {{ $item->status === 'Dikembalikan' && $item->tanggal_kembali ? \Carbon\Carbon::parse($item->tanggal_kembali)->format('d-m-Y') : '-' }}
+                    </td>
                     <td>{{ $item->status }}</td>
                 </tr>
             @endforeach

@@ -62,24 +62,14 @@
             <nav class="navbar navbar-light px-4 py-2">
                 <div class="d-flex justify-content-between w-100">
                     <span class="navbar-brand mb-0 h5">Sistem Informasi Aset</span>
-                    <div class="dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle me-2"></i>{{ Auth::user()->name }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                            <li><a class="dropdown-item" href="{{ route('profile.show') }}">Profil</a></li>
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item">Logout</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </div>
+                   <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-decoration-none">
+                    <img src="{{ asset('images/default-user.jpg') }}" alt="Foto Profil"
+                        class="rounded-circle me-2 object-fit-cover" width="36" height="36"
+                        style="object-fit: cover;"
+                        onerror="this.src='https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=0D8ABC&color=fff';" />
+
+                    <span class="text-dark">{{ Auth::user()->name }}</span>
+                </a>
                 </div>
             </nav>
 

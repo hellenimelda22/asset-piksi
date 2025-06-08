@@ -3,9 +3,10 @@
 @section('title', 'Tambah Banyak Aset')
 
 @section('content')
-<h2>Tambah Banyak Aset</h2>
+<div class="container mt-4">
+    <h4 class="mb-4 fw-bold">Tambah Banyak Aset</h4>
 
-<form action="{{ route('aset.store_multiple') }}" method="POST">
+<form method="POST" action="{{ route('aset.store-multiple') }}" enctype="multipart/form-data">
     @csrf
 
     <div class="mb-3">
@@ -20,7 +21,7 @@
     <div class="mb-3">
         <label for="jumlah" class="form-label">Jumlah Aset</label>
         <input type="number" name="jumlah" id="jumlah" class="form-control @error('jumlah') is-invalid @enderror"
-            value="{{ old('jumlah') }}" placeholder="Masukkan jumlah aset yang ingin ditambahkan" min="1">
+            value="{{ old('jumlah') }}" placeholder="Masukkan jumlah aset" min="1">
         @error('jumlah')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -44,14 +45,32 @@
     <!-- Tahun Perolehan -->
     <div class="mb-3">
         <label for="tahun_perolehan" class="form-label">Tahun Perolehan</label>
-        <input type="number" name="tahun_perolehan" id="tahun_perolehan" class="form-control" value="{{ old('tahun_perolehan') }}" placeholder="Masukkan tahun perolehan aset">
+        <select name="tahun_perolehan" id="tahun_perolehan" class="form-select @error('tahun_perolehan') is-invalid @enderror">
+            @php
+                $tahunSekarang = date('Y');
+                $tahunMulai = 1980;
+            @endphp
+            <option value="">-- Pilih Tahun --</option>
+            @for($tahun = $tahunSekarang; $tahun >= $tahunMulai; $tahun--)
+               <option value="{{ $tahun }}" {{ old('tahun_perolehan') == $tahun ? 'selected' : '' }}>
+                    {{ $tahun }}
+                </option>
+            @endfor
+        </select>
+        @error('tahun_perolehan')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
     </div>
 
-    <div class="mb-3">
+     <div class="mb-3">
         <label for="kondisi" class="form-label">Kondisi</label>
-        <select name="kondisi" id="kondisi" class="form-select @error('kondisi') is-invalid @enderror">
+        <select name="kondisi" class="form-select @error('kondisi') is-invalid @enderror">
+            <option value="">-- Pilih Kondisi --</option>
             <option value="Baik" {{ old('kondisi') == 'Baik' ? 'selected' : '' }}>Baik</option>
-            <option value="Rusak" {{ old('kondisi') == 'Rusak' ? 'selected' : '' }}>Rusak</option>
+            <option value="Rusak Ringan" {{ old('kondisi') == 'Rusak Ringan' ? 'selected' : '' }}>Rusak Ringan</option>
+            <option value="Rusak Berat" {{ old('kondisi') == 'Rusak Berat' ? 'selected' : '' }}>Rusak Berat</option>
+            <option value="Dalam Perbaikan" {{ old('kondisi') == 'Dalam Perbaikan' ? 'selected' : '' }}>Dalam Perbaikan</option>
+            <option value="Aktif" {{ old('kondisi') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
         </select>
         @error('kondisi')
             <div class="invalid-feedback">{{ $message }}</div>
@@ -63,6 +82,15 @@
         <input type="text" name="lokasi" id="lokasi" class="form-control @error('lokasi') is-invalid @enderror"
             value="{{ old('lokasi') }}" placeholder="Masukkan lokasi aset">
         @error('lokasi')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
+    <div class="mb-3">
+        <label for="gambar_aset" class="form-label">Gambar Aset (opsional)</label>
+        <input type="file" name="gambar_aset" id="gambar_aset"
+            class="form-control @error('gambar_aset') is-invalid @enderror" accept="image/*">
+        @error('gambar_aset')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>

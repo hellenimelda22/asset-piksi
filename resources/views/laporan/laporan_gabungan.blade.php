@@ -1,137 +1,100 @@
 @extends('layouts.app')
 
+@section('title', 'Laporan Gabungan Aset & Peminjaman')
+
 @section('content')
-<style>
-    body {
-        background-color: #f5f5f5;
-    }
+<div class="container mt-4">
+    <div class="card p-4 shadow-sm rounded">
+        <h4 class="fw-bold text-center mb-4">Laporan Aset & Peminjaman</h4>
+        <br>
 
-    .container {
-        max-width: 1100px;
-        margin: 0 auto;
-        padding: 30px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        font-family: 'Segoe UI', sans-serif;
-    }
+        <div class="mb-3">
+            <a href="{{ route('laporan.gabungan.pdf') }}" target="_blank" class="btn btn-primary">
+                <i class="bi  bi-file-earmark-pdf-fill me-1"></i> Cetak PDF Gabungan
+            </a>
+        </div>
+         
+        <h5 class="fw-semibold text-center mt-4 mb-3">Data Aset</h5>
+        <div class="table-responsive mb-4">
+            <table class="table table-borderless table-striped align-middle">
+                <thead class="table-primary text-left">
+                    <tr>
+                        <th>No</th>
+                        <th>Kode Aset</th>
+                        <th>Nama Aset</th>
+                        <th>Kategori</th>
+                        <th>Tahun Perolehan</th>
+                        <th>Lokasi</th>
+                        <th>Kondisi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($aset as $index => $item)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $item->kode_aset }}</td>
+                            <td>{{ $item->nama_aset }}</td>
+                            <td>{{ $item->kategori->nama_kategori ?? '-' }}</td>
+                            <td>{{ $item->tahun_perolehan }}</td>
+                            <td>{{ $item->lokasi }}</td>
+                            <td>{{ $item->kondisi }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">Tidak ada data aset.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-    h3 {
-        color: #2c3e50;
-        border-bottom: 2px solid #ddd;
-        padding-bottom: 10px;
-    }
+        <h5 class="fw-semibold text-center mt-4 mb-3">Data Peminjaman</h5>
+        <div class="table-responsive">
+            <table class="table table-borderless table-striped align-middle">
+                <thead class="table-primary text-center">
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Peminjam</th>
+                        <th>Nama Aset</th>
+                        <th>Tanggal Pinjam</th>
+                        <th>Tanggal Kembali</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($peminjaman as $index => $item)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td>{{ $item->nama_peminjam }}</td>
+                            <td>{{ $item->aset->nama_aset ?? '-' }}</td>
+                            <td>{{ \Carbon\Carbon::parse($item->tanggal_pinjam)->format('d-m-Y') }}</td>
+                            <td>
+                                @if ($item->status === 'Dikembalikan')
+                                    {{ \Carbon\Carbon::parse($item->tanggal_kembali)->format('d-m-Y') }}
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td>
+                                @if ($item->status === 'Dipinjam')
+                                    <span class="badge bg-warning text-dark">Dipinjam</span>
+                                @else
+                                    <span class="badge bg-success">Dikembalikan</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Tidak ada data peminjaman.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-    h4 {
-        margin-top: 30px;
-        color: #34495e;
-    }
-
-    .btn {
-        padding: 10px 18px;
-        background-color: #3498db;
-        color: #fff;
-        text-decoration: none;
-        border-radius: 5px;
-        display: inline-block;
-        margin-bottom: 20px;
-        transition: background-color 0.3s ease;
-    }
-
-    .btn:hover {
-        background-color: #2980b9;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 15px;
-        margin-bottom: 40px;
-    }
-
-    th {
-        background-color: #3498db;
-        color: #fff;
-        padding: 12px;
-        text-align: left;
-    }
-
-    td {
-        padding: 10px;
-        border-bottom: 1px solid #eee;
-    }
-
-    tr:hover {
-        background-color: #f0f8ff;
-    }
-
-    .footer {
-        margin-top: 40px;
-        font-size: 14px;
-        color: #888;
-        text-align: center;
-    }
-</style>
-
-<div class="container">
-    <h3>Laporan Gabungan Aset & Peminjaman</h3>
-
-    @if (!isset($isPdf) || !$isPdf)
-        <a href="{{ route('laporan.gabungan.pdf') }}" class="btn">Cetak PDF Gabungan</a>
-    @endif
-
-    <h4>Data Aset</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>ID Aset</th>
-                <th>Nama Aset</th>
-                <th>Kategori</th>
-                <th>Status</th>
-                <th>Lokasi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($aset as $item)
-                <tr>
-                    <td>{{ $item->id }}</td>
-                    <td>{{ $item->nama_aset }}</td>
-                    <td>{{ $item->kategori->nama_kategori }}</td>
-                    <td>{{ $item->status }}</td>
-                    <td>{{ $item->lokasi }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <h4>Data Peminjaman</h4>
-    <table>
-        <thead>
-            <tr>
-                <th>ID Peminjaman</th>
-                <th>Nama Peminjam</th>
-                <th>Aset yang Dipinjam</th>
-                <th>Tanggal Pinjam</th>
-                <th>Tanggal Kembali</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($peminjaman as $item)
-                <tr>
-                    <td>{{ $item->id }}</td>
-                    <td>{{ $item->nama_peminjam }}</td>
-                    <td>{{ $item->aset ? $item->aset->nama_aset : '-' }}</td>
-                    <td>{{ date('d-m-Y', strtotime($item->tanggal_pinjam)) }}</td>
-                    <td>{{ date('d-m-Y', strtotime($item->tanggal_kembali)) }}</td>
-                    <td>{{ $item->status }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-    <div class="footer">
-        &copy; 2025 Aset Management System | Semua Hak Dilindungi
+        <div class="text-center text-muted mt-5" style="font-size: 12px;">
+            &copy; 2025 Aset Management System | Semua Hak Dilindungi
+        </div>
     </div>
 </div>
 @endsection

@@ -10,126 +10,124 @@ use App\Models\KategoriAset;
 
 class LaporanController extends Controller
 {
-    public function index(Request $request)
-    {
-        $aset = Asset::query();
-    
-        if ($request->filled('kategori_id')) {
-            $aset->where('kategori_id', $request->kategori_id);
-        }
-    
-        if ($request->filled('nama_aset')) {
-            $aset->where('nama_aset', 'like', '%' . $request->nama_aset . '%');
-        }
-    
-        if ($request->filled('lokasi')) {
-            $aset->where('lokasi', 'like', '%' . $request->lokasi . '%');
-        }
-    
-        if ($request->filled('kondisi')) {
-            $aset->where('kondisi', $request->kondisi);
-        }
-    
-        $data = [
-            'aset' => $aset->get(),
-            'kategoriData' => KategoriAset::all()
-        ];
-    
-        return view('laporan.index', $data);
-    }
-    
-
-    // Method untuk generate PDF gabungan
-    public function generatePDF(Request $request)
-    {
-        $aset = Asset::all();
-        $peminjaman = PeminjamanAset::query();
-
-        if ($request->has('status')) {
-            $peminjaman->where('status', $request->input('status'));
-        }
-
-        $peminjaman = $peminjaman->get();
-
-        $pdf = Pdf::loadView('laporan.pdf', compact('aset', 'peminjaman'));
-        return $pdf->download('laporan_aset_peminjaman.pdf');
-    }
-
-    // Laporan peminjaman (tampilan halaman)
-   public function laporanPeminjaman(Request $request)
-{
-    $peminjaman = PeminjamanAset::with('aset');
-
-    if ($request->filled('status')) {
-        $peminjaman->where('status', $request->status);
-    }
-
-    if ($request->filled('nama_peminjam')) {
-        $peminjaman->where('nama_peminjam', 'like', '%' . $request->nama_peminjam . '%');
-    }
-
-    if ($request->filled('tanggal_pinjam')) {
-        $peminjaman->whereDate('tanggal_pinjam', $request->tanggal_pinjam);
-    }
-
-    $peminjaman = $peminjaman->get();
-
-    return view('laporan.peminjaman', compact('peminjaman'));
-}
-
-
-    // Laporan aset (tampilan halaman)
+    // 🌐 Halaman Laporan Aset
     public function laporanAset(Request $request)
     {
-        $kategoriData = KategoriAset::all();
-    
-        $aset = Asset::query();
-    
-        // Filter berdasarkan kategori
-        if ($request->filled('kategori_id')) {
-            $aset->where('kategori_id', $request->kategori_id);
+        $query = Asset::with('kategori');
+
+        if ($request->kategori_id) {
+            $query->where('kategori_id', $request->kategori_id);
         }
-    
-        // Filter berdasarkan nama aset (LIKE)
-        if ($request->filled('nama_aset')) {
-            $aset->where('nama_aset', 'like', '%' . $request->nama_aset . '%');
+
+        if ($request->nama_aset) {
+            $query->where('nama_aset', 'like', '%' . $request->nama_aset . '%');
         }
-    
-        $aset = $aset->get();
-    
-        return view('laporan.index', compact('aset', 'kategoriData'));
-    }
-    
-    public function laporanGabungan()
-    {
-        $aset = Asset::all();
-        $peminjaman = PeminjamanAset::with('aset')->get();
-    
-        return view('laporan.laporan_gabungan', compact('aset', 'peminjaman'));
-    }
-    
+
+        if ($request->lokasi) {
+            $query->where('lokasi', 'like', '%' . $request->lokasi . '%');
+        }
+
+        if ($request->tahun_perolehan) {
+            $query->where('tahun_perolehan', $request->tahun_perolehan);
+        }
 
 
-    // Cetak PDF laporan aset
-    public function cetakLaporanAset()
+        $aset = $query->paginate(10);
+        $kategoriList = KategoriAset::all();
+        $asetList = Asset::select('nama_aset')->distinct()->pluck('nama_aset');
+        $lokasiList = Asset::select('lokasi')->distinct()->pluck('lokasi');
+
+        return view('laporan.aset', compact('aset', 'kategoriList', 'asetList', 'lokasiList'));
+    }
+
+    // 🖨️ Cetak PDF Laporan Aset
+    public function cetakLaporanAset(Request $request)
     {
-        $aset = Asset::all();
-        $pdf = Pdf::loadView('laporan.laporan_aset', compact('aset'));
+        $query = Asset::with('kategori');
+
+        if ($request->kategori_id) {
+            $query->where('kategori_id', $request->kategori_id);
+        }
+
+        if ($request->nama_aset) {
+            $query->where('nama_aset', 'like', '%' . $request->nama_aset . '%');
+        }
+
+        if ($request->lokasi) {
+            $query->where('lokasi', 'like', '%' . $request->lokasi . '%');
+        }
+
+        if ($request->tahun) {
+            $query->where('tahun_perolehan', $request->tahun);
+        }
+
+        $aset = $query->get();
+
+        $pdf = Pdf::loadView('laporan.laporan_aset_pdf', compact('aset'));
         return $pdf->stream('laporan-aset.pdf');
     }
 
-    // Cetak PDF laporan peminjaman
-    public function cetakLaporanPeminjaman()
+    // 🌐 Halaman Laporan Peminjaman
+    public function laporanPeminjaman(Request $request)
     {
-        $peminjaman = PeminjamanAset::with('aset')->get();
-        $pdf = Pdf::loadView('laporan.laporan_peminjaman', compact('peminjaman'));
+        $query = PeminjamanAset::with('aset');
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->nama_peminjam) {
+            $query->where('nama_peminjam', 'like', '%' . $request->nama_peminjam . '%');
+        }
+
+        if ($request->tanggal_pinjam) {
+            $query->whereDate('tanggal_pinjam', $request->tanggal_pinjam);
+        }
+
+        $peminjaman = $query->get();
+
+        return view('laporan.laporan_peminjaman', compact('peminjaman'));
+    }
+
+    // 🖨️ Cetak PDF Laporan Peminjaman
+    public function cetakLaporanPeminjaman(Request $request)
+    {
+        $query = PeminjamanAset::with('aset');
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->nama_peminjam) {
+            $query->where('nama_peminjam', 'like', '%' . $request->nama_peminjam . '%');
+        }
+
+        if ($request->tanggal_pinjam) {
+            $query->whereDate('tanggal_pinjam', $request->tanggal_pinjam);
+        }
+
+        $peminjaman = $query->get();
+
+        $pdf = Pdf::loadView('laporan.laporan_peminjaman_pdf', compact('peminjaman'));
         return $pdf->stream('laporan-peminjaman.pdf');
     }
-    public function cetakLaporanGabungan() 
+
+    // 🌐 Halaman Laporan Gabungan
+    public function laporanGabungan()
     {
-        $aset = AsSet::with('kategori')->get();
+        $aset = Asset::with('kategori')->get();
         $peminjaman = PeminjamanAset::with('aset')->get();
+
+        return view('laporan.laporan_gabungan', compact('aset', 'peminjaman'));
+    }
+
+    // 🖨️ Cetak PDF Laporan Gabungan
+    public function cetakLaporanGabungan()
+    {
+        $aset = Asset::with('kategori')->get();
+        $peminjaman = PeminjamanAset::with('aset')->get();
+
         $pdf = Pdf::loadView('laporan.laporan_gabungan_pdf', compact('aset', 'peminjaman'));
-        return $pdf->stream('laporan_gabungan.pdf');
+        return $pdf->stream('laporan-gabungan.pdf');
     }
 }
