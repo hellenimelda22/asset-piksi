@@ -145,9 +145,5 @@
         </tbody>
     </table>
 
-    <div class="footer">
-        <p>&copy; 2025 Aset Management System | Semua Hak Dilindungi</p>
-    </div>
-
 </body>
 </html>

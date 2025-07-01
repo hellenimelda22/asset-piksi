@@ -32,7 +32,7 @@ class ResetPasswordController extends Controller
                 ])->save();
             }
         );
-
+ 
         // ✅ Flash pesan sukses & redirect ke login
         if ($status === Password::PASSWORD_RESET) {
             return redirect()->route('login')->with('success', 'Password berhasil direset. Silakan login dengan password baru.');

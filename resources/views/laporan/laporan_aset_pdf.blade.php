@@ -104,9 +104,6 @@
         </tbody>
     </table>
 
-    <div class="footer">
-        &copy; 2025 Sistem Informasi Aset - Politeknik Piksi Input Serang. Semua hak dilindungi.
-    </div>
-
+   
 </body>
 </html>

@@ -57,8 +57,8 @@ class LaporanController extends Controller
             $query->where('lokasi', 'like', '%' . $request->lokasi . '%');
         }
 
-        if ($request->tahun) {
-            $query->where('tahun_perolehan', $request->tahun);
+        if ($request->tahun_perolehan) {
+            $query->where('tahun_perolehan', $request->tahun_perolehan);
         }
 
         $aset = $query->get();
