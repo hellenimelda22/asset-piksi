@@ -14,9 +14,13 @@ class PeminjamanAset extends Model
      {
          return $this->belongsTo(Asset::class,'aset_id');
      }
-    public function user()
-{
-    return $this->belongsTo(User::class);
-}
+        public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function bukti()
+    {
+        return $this->hasOne(BuktiPeminjaman::class, 'peminjaman_id');
+    }
 
 }

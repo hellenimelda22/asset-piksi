@@ -17,7 +17,8 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('peminjaman.store') }}">
+            {{-- ✅ Tambahkan enctype karena ada file upload --}}
+            <form method="POST" action="{{ route('peminjaman.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
@@ -46,6 +47,13 @@
                     </div>
                 </div>
 
+                {{-- ✅ Input Upload Bukti --}}
+                <div class="mb-3">
+                    <label for="file_bukti" class="form-label">Upload Bukti Peminjaman (opsional)</label>
+                    <input type="file" name="file_bukti" class="form-control" accept=".pdf,.jpg,.jpeg,.png">
+                    <small class="text-muted">File maksimal 2MB (PDF/JPG/PNG)</small>
+                </div>
+
                 <div class="d-flex justify-content-start mt-4">
                     <button type="submit" class="btn btn-primary me-2">
                        <i class="bi bi-save2 me-1"></i> Simpan Peminjaman
@@ -59,6 +67,7 @@
     </div>
 </div>
 @endsection
+
 @push('scripts')
 <script>
     $(document).ready(function () {

@@ -26,8 +26,8 @@
                 <div class="col-md-7">
                     <table class="table table-borderless">
                         <tr>
-                           <th>Kode Aset</th>
-                           <td>{{ $aset->kode_aset }}</td>
+                            <th>Kode Aset</th>
+                            <td>{{ $aset->kode_aset }}</td>
                         </tr>
                         <tr>
                             <th>Nama Aset</th>
@@ -38,7 +38,7 @@
                             <td>{{ $aset->kategori->nama_kategori ?? '-' }}</td>
                         </tr>
 
-                        {{-- Tampilkan Luas jika Bangunan (4) atau Lahan (8) --}}
+                        {{-- Luas jika kategori bangunan/lahan --}}
                         @if (in_array($aset->kategori_id, [4, 8]))
                         <tr>
                             <th>Luas (m²)</th>
@@ -47,8 +47,16 @@
                         @endif
 
                         <tr>
-                            <th>Status</th>
-                            <td><span class="badge bg-secondary">{{ $aset->status }}</span></td>
+                            <th>Tahun Perolehan</th>
+                            <td>{{ $aset->tahun_perolehan }}</td>
+                        </tr>
+                        <tr>
+                            <th>Harga Beli</th>
+                            <td>{{ $aset->harga_beli ? 'Rp ' . number_format($aset->harga_beli, 0, ',', '.') : '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Lokasi</th>
+                            <td>{{ $aset->lokasi }}</td>
                         </tr>
                         <tr>
                             <th>Kondisi</th>
@@ -62,12 +70,8 @@
                             </td>
                         </tr>
                         <tr>
-                            <th>Lokasi</th>
-                            <td>{{ $aset->lokasi }}</td>
-                        </tr>
-                        <tr>
-                            <th>Tahun Perolehan</th>
-                            <td>{{ $aset->tahun_perolehan }}</td>
+                            <th>Status</th>
+                            <td><span class="badge bg-secondary">{{ $aset->status }}</span></td>
                         </tr>
                     </table>
                 </div>
@@ -75,7 +79,7 @@
                 {{-- Kolom Gambar --}}
                 <div class="col-md-5 text-center">
                     @if($aset->gambar_aset && file_exists(public_path($aset->gambar_aset)))
-                        <img src="{{ asset($aset->gambar_aset) }}" alt="Gambar Aset" class="img-thumbnail" style="max-width: 50%; height: auto;">
+                        <img src="{{ asset($aset->gambar_aset) }}" alt="Gambar Aset" class="img-thumbnail" style="max-width: 60%; height: auto;">
                     @else
                         <div class="text-muted fst-italic mt-4">Belum ada gambar aset</div>
                     @endif

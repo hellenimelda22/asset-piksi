@@ -166,6 +166,7 @@
 
                         @endif
                         <th class="text-center align-middle"style="background-color:rgb(204, 227, 255); color: #212529;">Tahun</th>
+                        <th class="text-center align-middle"style="background-color:rgb(204, 227, 255); color: #212529;">Harga Beli (Rp)</th>
                         <th class="text-center align-middle"style="background-color:rgb(204, 227, 255); color: #212529;">Lokasi</th>
                         <th class="text-center align-middle"style="background-color:rgb(204, 227, 255); color: #212529;">Kondisi</th>
                         <th class="text-center align-middle"style="background-color:rgb(204, 227, 255); color: #212529;">Status</th>
@@ -184,6 +185,7 @@
                         <td class="text-center">{{ $item->luas ?? '-' }}</td>
                         @endif
                         <td class="text-center">{{ $item->tahun_perolehan }}</td>
+                        <td class="text-left">{{ $item->harga_beli ? 'Rp ' . number_format($item->harga_beli, 0, ',', '.') : '-' }}</td>
                         <td>{{ $item->lokasi }}</td>
                         <td class="text-center">
                             <span class="badge bg-{{ 
@@ -229,7 +231,7 @@
                     @endforeach
                     @if($aset->isEmpty())
                     <tr>
-                        <td colspan="{{ $showLuas ? 11 : 10 }}" class="text-center text-muted">Tidak ada data aset ditemukan.</td>
+                        <td colspan="{{ $showLuas ? 12 : 12 }}" class="text-center text-muted">Tidak ada data aset ditemukan.</td>
                     </tr>
                     @endif
                 </tbody>

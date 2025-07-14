@@ -98,6 +98,16 @@
         @enderror
     </div>
 
+    {{-- Harga Beli --}}
+    <div class="mb-3">
+        <label for="harga_beli" class="form-label">Harga Beli (opsional)</label>
+        <input type="number" name="harga_beli" id="harga_beli" class="form-control @error('harga_beli') is-invalid @enderror"
+            value="{{ old('harga_beli', $aset->harga_beli) }}" placeholder="Contoh: 5000000" step="1000" min="0">
+        @error('harga_beli')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
     <div class="mb-3">
         <label for="lokasi" class="form-label">Lokasi</label>
         <input type="text" name="lokasi" id="lokasi" class="form-control @error('lokasi') is-invalid @enderror"
@@ -110,13 +120,13 @@
     <div class="mb-3">
         <label for="kondisi" class="form-label">Kondisi</label>
         @php $selected = old('kondisi', $aset->kondisi ?? '') @endphp
-            <select name="kondisi" id="kondisi" class="form-select @error('kondisi') is-invalid @enderror">
-                <option value="Baik" {{ $selected == 'Baik' ? 'selected' : '' }}>Baik</option>
-                <option value="Rusak Ringan" {{ $selected == 'Rusak Ringan' ? 'selected' : '' }}>Rusak Ringan</option>
-                <option value="Rusak Berat" {{ $selected == 'Rusak Berat' ? 'selected' : '' }}>Rusak Berat</option>
-                <option value="Dalam Perbaikan" {{ $selected == 'Dalam Perbaikan' ? 'selected' : '' }}>Dalam Perbaikan</option>
-                <option value="Aktif" {{ $selected == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-            </select>
+        <select name="kondisi" id="kondisi" class="form-select @error('kondisi') is-invalid @enderror">
+            <option value="Baik" {{ $selected == 'Baik' ? 'selected' : '' }}>Baik</option>
+            <option value="Rusak Ringan" {{ $selected == 'Rusak Ringan' ? 'selected' : '' }}>Rusak Ringan</option>
+            <option value="Rusak Berat" {{ $selected == 'Rusak Berat' ? 'selected' : '' }}>Rusak Berat</option>
+            <option value="Dalam Perbaikan" {{ $selected == 'Dalam Perbaikan' ? 'selected' : '' }}>Dalam Perbaikan</option>
+            <option value="Aktif" {{ $selected == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+        </select>
         @error('kondisi')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
@@ -137,6 +147,7 @@
         <i class="bi bi-arrow-left-circle-fill me-2"></i> Kembali
     </a>
 </form>
+</div>
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>

@@ -7,7 +7,7 @@
     <div class="card shadow-sm p-4 rounded">
         <h4 class="fw-bold text-center mb-4">Laporan Aset</h4>
         <br>
-    
+
         {{-- Filter --}}
         <form method="GET" action="{{ route('laporan.aset') }}" class="row g-3 align-items-end mb-3">
             <div class="col-md-2">
@@ -63,7 +63,6 @@
                     <i class="bi bi-filter-circle me-1"></i> Filter
                 </button>
 
-                {{-- Tombol Cetak PDF: TAB BARU --}}
                 <a href="{{ route('laporan.aset.pdf', request()->query()) }}" 
                    target="_blank" rel="noopener noreferrer" 
                    class="btn btn-success w-50">
@@ -84,9 +83,11 @@
                         <th class="text-left">Tahun Perolehan</th>
                         <th class="text-left">Lokasi</th>
                         <th class="text-left">Kondisi</th>
+                        <th class="text-left">Harga Beli</th>
                     </tr>
                 </thead>
                 <tbody>
+                    @php $totalHarga = 0; @endphp
                     @forelse($aset as $index => $item)
                         <tr>
                             <td>{{ $index + $aset->firstItem() }}</td>
@@ -96,26 +97,39 @@
                             <td>{{ $item->tahun_perolehan }}</td>
                             <td>{{ $item->lokasi }}</td>
                             <td>{{ $item->kondisi }}</td>
+                            <td>
+                                @if ($item->harga_beli)
+                                    Rp {{ number_format($item->harga_beli, 0, ',', '.') }}
+                                    @php $totalHarga += $item->harga_beli; @endphp
+                                @else
+                                    -
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted">Tidak ada data aset.</td>
+                            <td colspan="8" class="text-center text-muted">Tidak ada data aset.</td>
                         </tr>
                     @endforelse
+                    @if($aset->count())
+                    <tr class="fw-bold table-light">
+                        <td colspan="7" class="text-end">Total Harga Beli</td>
+                        <td>Rp {{ number_format($totalHarga, 0, ',', '.') }}</td>
+                    </tr>
+                    @endif
                 </tbody>
             </table>
         </div>
 
-      <div class="d-flex justify-content-between align-items-center mt-2">
-        <div class="small text-muted">
-            {{ $aset->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
+        <div class="d-flex justify-content-between align-items-center mt-2">
+            <div class="small text-muted">
+                {{ $aset->appends(request()->except('page'))->links('pagination::bootstrap-5') }}
+            </div>
         </div>
-    </div>
 
-
-    {{-- Footer --}}
-    <div class="text-center text-muted mt-5" style="font-size: 12px;">
-        &copy; 2025 Aset Management System | Semua Hak Dilindungi
+        <div class="text-center text-muted mt-5" style="font-size: 12px;">
+            &copy; 2025 Aset Management System | Semua Hak Dilindungi
+        </div>
     </div>
 </div>
 @endsection
