@@ -7,15 +7,15 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::table('asets', function (Blueprint $table) {
-            $table->unsignedBigInteger('harga_beli')->nullable()->after('tahun_perolehan');
+        Schema::table('peminjaman_asets', function (Blueprint $table) {
+            $table->string('bukti_peminjaman')->nullable()->after('status');
         });
     }
 
     public function down(): void
     {
-        Schema::table('asets', function (Blueprint $table) {
-            $table->dropColumn('harga_beli');
+        Schema::table('peminjaman_asets', function (Blueprint $table) {
+            $table->dropColumn('bukti_peminjaman');
         });
     }
 };

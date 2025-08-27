@@ -65,7 +65,7 @@
         <div class="mb-3">
             <label for="harga_beli" class="form-label">Harga Beli (opsional)</label>
             <input type="number" name="harga_beli" id="harga_beli" class="form-control @error('harga_beli') is-invalid @enderror"
-                value="{{ old('harga_beli') }}" placeholder="Contoh: 5000000" min="0" step="1000">
+                value="{{ old('harga_beli') }}" placeholder="masukkan harga beli aset">
             @error('harga_beli')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
